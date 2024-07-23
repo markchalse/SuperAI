@@ -2,10 +2,12 @@ Hello I am Super AI.
 
 # 脚本路径说明
 `/script`
+
 一些涉及整个系统的，QT需要启动的脚本
 
 ## 启动脚本
 `/script/start.bat`
+
 QT启动时执行的脚本，这个文件中，会拉起全部的AI进程
 
 # 代码路径说明
