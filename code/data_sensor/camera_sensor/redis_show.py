@@ -3,6 +3,7 @@ import pickle
 import redis  
 import base64
 import numpy as np
+import json
 
 # 初始化Redis连接  
 r = redis.Redis(host='localhost', port=6379, db=0)  
@@ -24,7 +25,11 @@ def get_image_from_redis(key):
     
     #base64
     #base64_str = r.rpop(key)
-    base64_str = r.lindex(key, -1)
+    camera_json_str = r.lindex(key, -1)
+    camera_dict = json.loads(camera_json_str)
+    print ('%s : %s'%(camera_dict['camera_name'],camera_dict['time']))
+    base64_str = camera_dict['data']
+    
     if base64_str is not None:
         #print (base64_str)
         
