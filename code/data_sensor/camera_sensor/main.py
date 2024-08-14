@@ -5,9 +5,11 @@ import redis
 from redis_tools import push_image_to_redis
 
 if __name__ == '__main__':
+    push_count = 0
     ###################### capture ##############
     #redis
     redis_connect = redis.Redis(host='localhost', port=6379, db=0) 
+    redis_connect.set('camera_down','0')
     
     # 打开摄像头，参数0表示使用默认的摄像头  
     #cap = cv2.VideoCapture(self.env.CAMERA_NUM)  
@@ -38,12 +40,17 @@ if __name__ == '__main__':
             break
         
         # 显示画面  
-        cv2.imshow('frame', frame) 
-        push_image_to_redis(redis_connect,frame)
+        #cv2.imshow('frame', frame) 
+        push_count = push_image_to_redis(redis_connect,frame,push_count)
+        
         
         # 如果按下 'q' 键，则退出循环  
         if cv2.waitKey(1) & 0xFF == ord('q'):  
             break
+        
+        if push_count%30 == 0:
+            if redis_connect.get('camera_down')==b'1':
+                break
         
     # 释放摄像头并关闭所有OpenCV窗口  
     cap.release()  
