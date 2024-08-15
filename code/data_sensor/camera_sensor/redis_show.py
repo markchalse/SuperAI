@@ -69,6 +69,9 @@ while True:
     # 等待按键，如果按下'q'则退出循环  
     if cv2.waitKey(1) & 0xFF == ord('q'):  
         break  
+    
+    if r.get('camera_down')==b'1':
+        break
   
 # 销毁所有OpenCV窗口  
 cv2.destroyAllWindows()
