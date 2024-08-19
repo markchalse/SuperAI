@@ -26,10 +26,13 @@ def push_image_to_redis(redis_object,processed_image,count):
     base64_str = base64.b64encode(image_str).decode('utf-8')
     
     
-    push_dict = {'camera_name':'front_single',
-                 'width':'1920','height':1080,
-                 'time':get_now_YMDhmsms(),
-                 'data':base64_str}
+    push_dict = {"device":{'type_id':'101',
+                           'device_id':'1',
+                           'seq_id':'1',
+                           'width':'1920',
+                           'height':'1080',
+                           'time':get_now_YMDhmsms(),
+                           'data':base64_str}}
     #camer_name = 'front_single'
     
     image_store = json.dumps(push_dict)

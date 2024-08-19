@@ -26,8 +26,9 @@ def get_image_from_redis(key):
     #base64
     #base64_str = r.rpop(key)
     camera_json_str = r.lindex(key, -1)
-    camera_dict = json.loads(camera_json_str)
-    print ('%s : %s'%(camera_dict['camera_name'],camera_dict['time']))
+    json_dict = json.loads(camera_json_str)
+    camera_dict = json_dict['device']
+    print ('%s : %s'%(camera_dict['type_id'],camera_dict['time']))
     base64_str = camera_dict['data']
     
     if base64_str is not None:
