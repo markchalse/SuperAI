@@ -58,8 +58,8 @@ def get_image_from_redis(key):
     
   
 # 主循环，持续从Redis读取并显示图像，直到用户按下'q'键  
-#image_key = 'camera_images'  
-image_key = '101_1_0'  
+#image_key = 'face_recognition_images'  
+image_key = '101_50_0'  
 while True:  
     image = get_image_from_redis(image_key)  
     if image is None:  
@@ -72,7 +72,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):  
         break  
     
-    if r.get('camera_down')==b'1':
+    if r.get('face_recognition_down')==b'1':
         break
   
 # 销毁所有OpenCV窗口  

@@ -19,8 +19,8 @@ if __name__ == '__main__':
         print("无法打开摄像头")  
         exit()
     # 尝试设置分辨率，例如： 1920x1080 1280x720  
-    width = 1920#1280 #1920 #1280  
-    height = 1080#720 #1080 #720  
+    width = 1280#1280 #1920 #1280  
+    height = 720#720 #1080 #720  
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)  
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
     # 检查是否成功设置分辨率  
