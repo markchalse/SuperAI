@@ -30,6 +30,13 @@ def get_image_from_redis(key):
     camera_dict = json_dict['device']
     print ('%s : %s'%(camera_dict['type_id'],camera_dict['time']))
     base64_str = camera_dict['data']
+    person_dict = camera_dict['person']
+    
+    #print (person_dict)
+    
+    for name in person_dict.keys():
+        print (name)
+        print (person_dict[name]['box'])
     
     if base64_str is not None:
         #print (base64_str)
@@ -55,7 +62,7 @@ def get_image_from_redis(key):
       
     
       
-    
+r.set('ai_face_recognition_redis_show_down','0') 
   
 # 主循环，持续从Redis读取并显示图像，直到用户按下'q'键  
 #image_key = 'face_recognition_images'  
@@ -72,7 +79,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):  
         break  
     
-    if r.get('face_recognition_down')==b'1':
+    if r.get('ai_face_recognition_redis_show_down')==b'1':
         break
   
 # 销毁所有OpenCV窗口  

@@ -56,7 +56,8 @@ def get_image_from_redis(key):
     
       
     
-  
+r.set('ai_singal_camera_redis_show_down','0')   
+
 # 主循环，持续从Redis读取并显示图像，直到用户按下'q'键  
 #image_key = 'camera_images'  
 image_key = '101_1_0'  
@@ -72,7 +73,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):  
         break  
     
-    if r.get('camera_down')==b'1':
+    if r.get('ai_singal_camera_redis_show_down')==b'1':
         break
   
 # 销毁所有OpenCV窗口  

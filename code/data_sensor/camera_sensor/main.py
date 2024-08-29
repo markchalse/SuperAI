@@ -1,36 +1,111 @@
 
-
+import time
 import cv2
 import redis
 from redis_tools import push_image_to_redis
+from thread_controller import ThreadControler
+
+class CameraSensor:
+    def __init__(self,camera_num=0,width=1280,height=720):
+        self.width = width
+        self.height=height
+        self.camera_num = camera_num
+        self.redis_connect = redis.Redis(host='localhost', port=6379, db=0) 
+    
+        #capture
+        self.cap = cv2.VideoCapture(self.camera_num)
+        
+    def init_camera(self):
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)  
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+        # 检查是否成功设置分辨率  
+        if self.cap.get(cv2.CAP_PROP_FRAME_WIDTH) != self.width or self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT) != self.height:  
+            print(f"无法设置分辨率到 {self.width}x{self.height}")
+            return False  
+        else:  
+            print(f"成功设置分辨率到 {self.width}x{self.height}")
+            return True
+        
+    def capture(self,activate_step):
+        # 逐帧读取摄像头捕捉的画面  
+        ret, frame = self.cap.read()
+        
+        # 检查是否成功读取画面  
+        if not ret:  
+            print("无法接收帧（画面）。退出...")  
+            return False
+        
+        # 显示画面  
+        #cv2.imshow('frame', frame) 
+        push_image_to_redis(self.redis_connect,frame,activate_step)
+        return True
+        
 
 if __name__ == '__main__':
-    push_count = 0
-    ###################### capture ##############
-    #redis
-    redis_connect = redis.Redis(host='localhost', port=6379, db=0) 
-    redis_connect.set('camera_down','0')
+    print ('camera sensor server online!')
+    time.sleep(0.3)
+    tc = ThreadControler()
+    tc.init_thread()
+    print ('wait for activate...')
     
-    # 打开摄像头，参数0表示使用默认的摄像头  
-    #cap = cv2.VideoCapture(self.env.CAMERA_NUM)  
-    cap = cv2.VideoCapture(0)  
-    # 检查摄像头是否成功打开  
-    if not cap.isOpened():  
-        print("无法打开摄像头")  
-        exit()
-    # 尝试设置分辨率，例如： 1920x1080 1280x720  
-    width = 1280#1280 #1920 #1280  
-    height = 720#720 #1080 #720  
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)  
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    # 检查是否成功设置分辨率  
-    if cap.get(cv2.CAP_PROP_FRAME_WIDTH) != width or cap.get(cv2.CAP_PROP_FRAME_HEIGHT) != height:  
-        print(f"无法设置分辨率到 {width}x{height}")  
-    else:  
-        print(f"成功设置分辨率到 {width}x{height}")  
+    while True:
+        if not tc.check_activate():
+            time.sleep(3)
+        else:
+            print ('camera sensor activate')
+            camera  = CameraSensor()
+            if camera.init_camera():
+                print ('camera ready')
+            else:
+                print ('camera fail!')
+                time.sleep(2)
+                break
+            
+            activate_step = 0
+            while True:
+                activate_step+=1
+                flag = camera.capture(activate_step)
+                if not flag:
+                    print ('camera something wrong!')
+                    time.sleep(2)
+                    break
+            
+                #print (activate_step)
+                if activate_step%30 == 0:
+                    if not tc.check_on_line():
+                        #cv2.destroyAllWindows()
+                        break
+                    if not tc.check_activate():
+                        #cv2.destroyAllWindows()
+                        print ('deactivate')
+                        time.sleep(1)
+                        print ('wait for activate...')
+                        break
+            
+                if activate_step>10000000:
+                    activate_step = 0
+        
+        if not tc.check_on_line():
+            print ('person ReID server offline!')
+            time.sleep(1)
+            break
+        
+
+'''
+    #camera.redis_connect.set('camera_down','0')
+    
+    #print(camera.init_camera())
+
     ###################### capture ##############
     
     while True:
+        push_count,flag = camera.capture(push_count)
+        print ('statue: ',flag)
+        
+        if not flag:
+            break
+        
+        
         # 逐帧读取摄像头捕捉的画面  
         ret, frame = cap.read()
         
@@ -48,10 +123,12 @@ if __name__ == '__main__':
         if cv2.waitKey(1) & 0xFF == ord('q'):  
             break
         
+        
         if push_count%30 == 0:
-            if redis_connect.get('camera_down')==b'1':
+            if camera.redis_connect.get('camera_down')==b'1':
                 break
         
     # 释放摄像头并关闭所有OpenCV窗口  
-    cap.release()  
-    cv2.destroyAllWindows() 
+    camera.cap.release()  
+    #cv2.destroyAllWindows() 
+'''

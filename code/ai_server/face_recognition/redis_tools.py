@@ -5,6 +5,8 @@ import numpy as np
 import time
 import datetime
 
+from config import EnvConfig
+
 def get_now_YMDhmsms():
     timestamp = time.time()
     dt_object = datetime.datetime.fromtimestamp(timestamp)  
@@ -45,7 +47,9 @@ def get_image_from_redis(redis_connect,key):
         return None
     
     
-def push_image_to_redis(redis_object,image_list_key,processed_image,count):  
+def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,activate_step):  
+    env = EnvConfig()
+    
     r = redis_object
     
     height = processed_image.shape[0]
@@ -58,7 +62,12 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,count):
     # Encode array string to Base64
     base64_str = base64.b64encode(image_str).decode('utf-8')
     
-    
+    person_dict = {}
+    for person in result_dict.values():
+        if person['name']!=env.defeat_match_name:
+            person_dict[person['name']] = {}
+            person_dict[person['name']]['box'] = person['face_index']
+            
     push_dict = {"device":{'type_id':'101',
                            'device_id':'50',
                            'num_id':'0',
@@ -66,7 +75,8 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,count):
                            'width':str(width),
                            'height':str(height),
                            'time':get_now_YMDhmsms(),
-                           'data':base64_str}}
+                           'data':base64_str,
+                           'person':person_dict}}
     #camer_name = 'front_single'
     
     image_store = json.dumps(push_dict)
@@ -80,18 +90,16 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,count):
     
     # 检查Redis中的记录数  
     #后期优化一个进程专门来删除
-    if count>100:
+    if activate_step%100 == 0:
         image_count = r.llen(image_list_key)     
         # 如果记录数超过10条，弹出前面的8条  
         if image_count > 10:  
             try:
                 #r.lpop(image_list_key)  # 弹出一条
                 r.ltrim(image_list_key, -10, -1)  # 只保留列表中最新的10个元素
+                print ('clean face recognition redis memory ready!')
             except Exception as e:
                 print (e)
-        count = 0
-    else:
-        count+=1
 
       
     # 将新的图像推送到Redis  
@@ -99,5 +107,3 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,count):
         r.rpush(image_list_key, image_store)
     except Exception as e:
         print (e)
-    
-    return count

@@ -1,7 +1,7 @@
 class EnvConfig:
     def __init__(self):
         #self.USE_MODEL = 'vggface' #senet50
-        self.platform = "QT"#"LAPTOP" # "QT"
+        self.platform = "LAPTOP"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
 
 
         
@@ -11,7 +11,10 @@ class EnvConfig:
         elif self.platform == "QT":
             self.login_students_path = r"G:\workspace\majun\img\student"
             
-            
+        
+        
+        #main
+        self.camera_img_list_redis_key = '101_1_0'    
             
         self.name_with_out_suffix = True  #没有后缀名
         self.defeat_match_name = 'UnKnow' #没匹配到人脸的情况 给的名字
@@ -31,3 +34,11 @@ class EnvConfig:
         #face match
         self.vggface_same_face_euler_distance_threshold = 0.6       # [0,1] The closer to 0, the higher the accuracy
                                                                     #0.65 99% 45% 100%
+                                                                    
+                                                                    
+
+        
+        #thread controler
+        self.ai_online_flag = 'ai_super_online'
+        self.server_online_flag = 'ai_face_recognition_online'
+        self.server_activate_flag = 'ai_face_recognition_activate'

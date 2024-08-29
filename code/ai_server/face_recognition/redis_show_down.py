@@ -6,5 +6,5 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 
 
 for i in range(3):
-    r.set('camera_down','1')
-    time.sleep(1)
+    r.set('ai_face_recognition_redis_show_down','1')
+    time.sleep(0.3)

@@ -61,7 +61,7 @@ class LogIn():
         #capture_img = ImageArray2Cv2Image(frame)
         #cv2.imshow('prime_img',capture_img)
         self.info_prepare()
-        result_name_list = []
+        #result_name_list = []
         target_face_boxes = self.cut_tool.get_face_boxes(capture_img)          
         result_dict = {}
         for _ in range(len(target_face_boxes)):
@@ -71,13 +71,14 @@ class LogIn():
             x,y,w,h = target_face_boxes[_]
             name = self.face_m.face_imgs_select(capture_img[y:y+h, x:x+w],self.people_dict)
             result_dict[this_face_id]['name'] = name
-            result_name_list.append(name)
+            #result_name_list.append(name)
             
             #if self.env.SAVE_LOGIN_IMG:
             #    if name!= self.env.defeat_match_name:
             #        self.save_person_login_image(time_stamp,name,capture_img) #save full img for body detector
         #return self.cut_tool.mark_face_in_img(frame,result_dict),result_name_list
-        return self.cut_tool.mark_face_in_img(np.array(capture_img),result_dict),result_name_list
+        #return self.cut_tool.mark_face_in_img(np.array(capture_img),result_dict),result_name_list, result_dict
+        return self.cut_tool.mark_face_in_img(np.array(capture_img),result_dict), result_dict
     
 if __name__ == "__main__":
     login = LogIn()
