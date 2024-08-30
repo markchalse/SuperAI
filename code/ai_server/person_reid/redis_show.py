@@ -49,7 +49,7 @@ def get_image_from_redis(key):
     
       
 
-r.set('person_reid_show_down','0')    
+r.set('ai_person_reid_show_down','0')    
   
 # 主循环，持续从Redis读取并显示图像，直到用户按下'q'键  
 #image_key = 'ai_face_recognition_images'  

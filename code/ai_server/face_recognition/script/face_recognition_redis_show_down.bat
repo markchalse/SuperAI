@@ -1,13 +1,12 @@
 @echo off
-set MODE=debug
-if "%MODE%"=="debug" (
-    CALL E:\anaconda\Scripts\activate.bat E:\anaconda
-    CALL conda activate scene_learning_1
-    python F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\code\ai_server\face_recognition\redis_show_down.py
-) else (
-    CALL D:\software\computer\Anaconda\Scripts\activate.bat D:\software\computer\Anaconda
-    CALL conda activate scene_learning_1
-    python G:\workspace\majun\code\SuperAI\code\ai_server\face_recognition\redis_show_down.py
+echo -------------load env------------->> load-env.log
+for /f "delims== tokens=1* eol=#" %%i in (env.txt) do (
+	set %%i=%%j
+	echo %%i=%%j>> load-env.log
 )
+echo -------------load env------------->> load-env.log
+set activate_path=%anaconda_path%\Scripts\activate.bat
+CALL %activate_path% %anaconda_path%
+CALL conda activate %conda_env_name%
+python %code_base_path%\code\ai_server\face_recognition\thread_controller.py --func redis_set --param ai_face_recognition_redis_show_down 1
 conda deactivate
-pause
