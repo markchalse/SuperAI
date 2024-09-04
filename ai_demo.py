@@ -1,8 +1,12 @@
 # pip install pyqt5 -i https://pypi.tuna.tsinghua.edu.cn/simple
 import sys  
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel , QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel , QHBoxLayout, QTextEdit
 from PyQt5.QtCore import Qt,QProcess  
+import redis
+import json
+import time
+import datetime
 
 BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\code"
 
@@ -10,6 +14,8 @@ BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\cod
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"data_sensor\camera_sensor\script")
 FACE_RECOGNITION_PATH = os.path.join(BASE_PATH,r"ai_server\face_recognition\script")
 PERSON_REID_PATH = os.path.join(BASE_PATH,r"ai_server\person_reid\script")
+TTS_PATH = os.path.join(BASE_PATH,r"ai_server\text_to_speech\script")
+ASR_PATH = os.path.join(BASE_PATH,r"ai_server\voice_to_word\script")
 
 
 class App(QWidget):  
@@ -23,7 +29,7 @@ class App(QWidget):
     def initUI(self):  
         # 设置窗口  
         self.setWindowTitle('AI调试工具')  
-        self.setGeometry(400, 400, 800, 400)  
+        self.setGeometry(400, 400, 1200, 500)  
   
         # 创建主垂直布局  
         mainLayout = QVBoxLayout()
@@ -417,7 +423,327 @@ class App(QWidget):
         
         
         
+        #------------------------------------------------------------------------- text to sound TTS -------------------------------------------
         
+        
+        tts_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.tts_buttons = []
+        self.tts_show_buttons = []
+        
+        # 创建按钮  
+        tts_start_btn = QPushButton(f'启动文字转音频', self)
+        tts_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_start_btn.clicked.connect(lambda checked, path=os.path.join(TTS_PATH,'tts_start.bat') , server_name='tts' : self.execute_bat(path,server_name))
+        
+        tts_activate_btn = QPushButton(f'激活', self)
+        tts_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_activate_btn.clicked.connect(lambda checked, path=os.path.join(TTS_PATH,'tts_activate.bat') , server_name='tts' : self.execute_bat(path,server_name))
+
+        
+        tts_deactive_btn = QPushButton(f'挂起', self)
+        tts_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_deactive_btn.clicked.connect(lambda checked, path=os.path.join(TTS_PATH,'tts_deactivate.bat') , server_name='tts' : self.execute_bat(path,server_name))
+
+        
+        tts_offline_btn = QPushButton(f'下线', self)
+        tts_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_offline_btn.clicked.connect(lambda checked, path=os.path.join(TTS_PATH,'tts_down.bat') , server_name='tts' : self.execute_bat(path,server_name))
+
+        
+        tts_redis_show_btn = QPushButton(f'显示音频文字', self)
+        tts_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_redis_show_btn.clicked.connect(lambda checked, path='tts_text' , server_name='tts_show' : self.execute_bat(path,server_name))
+
+        
+        tts_redis_show_down_btn = QPushButton(f'显示音频文件', self)
+        tts_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_redis_show_down_btn.clicked.connect(lambda checked, path='tts_sound' , server_name='tts_show' : self.execute_bat(path,server_name))
+
+
+        tts_text_send_btn = QPushButton(f'发送文字', self)
+        tts_text_send_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        tts_text_send_btn.clicked.connect(lambda checked, path='tts_sound' , server_name='tts_send' : self.execute_bat(path,server_name))
+
+        
+        # 将按钮加入列表  
+        self.tts_buttons.append(tts_start_btn) 
+        self.tts_buttons.append(tts_activate_btn)  
+        self.tts_buttons.append(tts_deactive_btn)  
+        self.tts_buttons.append(tts_offline_btn)  
+        
+        self.tts_show_buttons.append(tts_redis_show_btn)
+        self.tts_show_buttons.append(tts_redis_show_down_btn)
+        
+        # 添加到布局
+        tts_layout.addWidget(tts_start_btn)
+        tts_layout.addWidget(tts_activate_btn)
+        tts_layout.addWidget(tts_deactive_btn)
+        tts_layout.addWidget(tts_offline_btn)
+        tts_layout.addWidget(tts_redis_show_btn)
+        tts_layout.addWidget(tts_redis_show_down_btn)
+        
+        
+        tts_label = QLabel('文字转音频服务', self)        
+        # 或者创建一个可以多行显示的 QTextEdit
+        self.tts_text_edit = QTextEdit(self)
+
+        self.tts_text_send_edit = QTextEdit(self)
+
+        tts_container = QWidget(self)  
+        tts_container.setLayout(tts_layout)
+        
+        
+        
+        
+        #------------------------------------------------------------------------- voice to word ASR -------------------------------------------
+        
+        
+        asr_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.asr_buttons = []
+        self.asr_show_buttons = []
+        
+        # 创建按钮  
+        asr_start_btn = QPushButton(f'启动音频识别', self)
+        asr_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_start_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_start.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        
+        asr_activate_btn = QPushButton(f'激活', self)
+        asr_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_activate_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_activate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        asr_deactive_btn = QPushButton(f'挂起', self)
+        asr_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_deactive_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_deactivate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        asr_offline_btn = QPushButton(f'下线', self)
+        asr_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_offline_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_down.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        asr_redis_show_btn = QPushButton(f'显示音频请求', self)
+        asr_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_redis_show_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_show' : self.execute_bat(path,server_name))
+
+        
+        asr_redis_show_down_btn = QPushButton(f'显示音频识别', self)
+        asr_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_redis_show_down_btn.clicked.connect(lambda checked, path='asr_text' , server_name='asr_show' : self.execute_bat(path,server_name))
+
+
+        asr_text_send_btn = QPushButton(f'发送路径', self)
+        asr_text_send_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        asr_text_send_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_send' : self.execute_bat(path,server_name))
+
+        
+        # 将按钮加入列表  
+        self.asr_buttons.append(asr_start_btn) 
+        self.asr_buttons.append(asr_activate_btn)  
+        self.asr_buttons.append(asr_deactive_btn)  
+        self.asr_buttons.append(asr_offline_btn)  
+        
+        self.asr_show_buttons.append(asr_redis_show_btn)
+        self.asr_show_buttons.append(asr_redis_show_down_btn)
+        
+        # 添加到布局
+        asr_layout.addWidget(asr_start_btn)
+        asr_layout.addWidget(asr_activate_btn)
+        asr_layout.addWidget(asr_deactive_btn)
+        asr_layout.addWidget(asr_offline_btn)
+        asr_layout.addWidget(asr_redis_show_btn)
+        asr_layout.addWidget(asr_redis_show_down_btn)
+        
+        
+        asr_label = QLabel('音频转文字服务', self)        
+        # 或者创建一个可以多行显示的 QTextEdit
+        self.asr_text_edit = QTextEdit(self)
+
+        self.asr_text_send_edit = QTextEdit(self)
+
+        asr_container = QWidget(self)  
+        asr_container.setLayout(asr_layout)
+        
+        
+        #------------------------------------------------------------------------- chatbot -------------------------------------------
+        
+        
+        chatbot_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.chatbot_buttons = []
+        self.chatbot_show_buttons = []
+        
+        # 创建按钮  
+        chatbot_start_btn = QPushButton(f'启动大语言对话', self)
+        chatbot_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_start_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_start.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        
+        chatbot_activate_btn = QPushButton(f'激活', self)
+        chatbot_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_activate_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_activate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        chatbot_deactive_btn = QPushButton(f'挂起', self)
+        chatbot_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_deactive_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_deactivate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        chatbot_offline_btn = QPushButton(f'下线', self)
+        chatbot_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_offline_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_down.bat') , server_name='asr' : self.execute_bat(path,server_name))
+
+        
+        chatbot_redis_show_btn = QPushButton(f'显示对话请求', self)
+        chatbot_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_redis_show_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_show' : self.execute_bat(path,server_name))
+
+        
+        chatbot_redis_show_down_btn = QPushButton(f'显示对话回答', self)
+        chatbot_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_redis_show_down_btn.clicked.connect(lambda checked, path='asr_text' , server_name='asr_show' : self.execute_bat(path,server_name))
+
+
+        chatbot_text_send_btn = QPushButton(f'发送对话', self)
+        chatbot_text_send_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        chatbot_text_send_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_send' : self.execute_bat(path,server_name))
+
+        
+        # 将按钮加入列表  
+        self.chatbot_buttons.append(chatbot_start_btn) 
+        self.chatbot_buttons.append(chatbot_activate_btn)  
+        self.chatbot_buttons.append(chatbot_deactive_btn)  
+        self.chatbot_buttons.append(chatbot_offline_btn)  
+        
+        self.chatbot_show_buttons.append(chatbot_redis_show_btn)
+        self.chatbot_show_buttons.append(chatbot_redis_show_down_btn)
+        
+        # 添加到布局
+        chatbot_layout.addWidget(chatbot_start_btn)
+        chatbot_layout.addWidget(chatbot_activate_btn)
+        chatbot_layout.addWidget(chatbot_deactive_btn)
+        chatbot_layout.addWidget(chatbot_offline_btn)
+        chatbot_layout.addWidget(chatbot_redis_show_btn)
+        chatbot_layout.addWidget(chatbot_redis_show_down_btn)
+        
+        
+        chatbot_label = QLabel('大语言模型对话服务', self)        
+        # 或者创建一个可以多行显示的 QTextEdit
+        self.chatbot_text_edit = QTextEdit(self)
+
+        self.chatbot_text_send_edit = QTextEdit(self)
+
+        chatbot_container = QWidget(self)  
+        chatbot_container.setLayout(chatbot_layout)
         
         
         
@@ -425,6 +751,9 @@ class App(QWidget):
         split_label1 = QLabel('----------------------------------------------------', self)
         split_label2 = QLabel('----------------------------------------------------', self)
         split_label3 = QLabel('----------------------------------------------------', self)
+        split_label4 = QLabel('----------------------------------------------------', self)
+        split_label5 = QLabel('----------------------------------------------------', self)
+        split_label6 = QLabel('----------------------------------------------------', self)
         # 将包含子布局的QWidget添加到主布局中  
         mainLayout.addWidget(camera_label)
         mainLayout.addWidget(camera_container)
@@ -440,8 +769,27 @@ class App(QWidget):
         
         mainLayout.addWidget(reid_label)
         mainLayout.addWidget(reid_container)
+        mainLayout.addWidget(split_label4)
         
+        mainLayout.addWidget(tts_label)
+        mainLayout.addWidget(tts_container)
+        mainLayout.addWidget(self.tts_text_edit)
+        mainLayout.addWidget(self.tts_text_send_edit)
+        mainLayout.addWidget(tts_text_send_btn)
+        mainLayout.addWidget(split_label5)
         
+        mainLayout.addWidget(asr_label)
+        mainLayout.addWidget(asr_container)
+        mainLayout.addWidget(self.asr_text_edit)
+        mainLayout.addWidget(self.asr_text_send_edit)
+        mainLayout.addWidget(asr_text_send_btn)
+        mainLayout.addWidget(split_label6)
+        
+        mainLayout.addWidget(chatbot_label)
+        mainLayout.addWidget(chatbot_container)
+        mainLayout.addWidget(self.chatbot_text_edit)
+        mainLayout.addWidget(self.chatbot_text_send_edit)
+        mainLayout.addWidget(chatbot_text_send_btn)
         # 创建一个QLabel并添加到主布局中  
         #label = QLabel('这是一个标签', self)  
         #mainLayout.addWidget(label)  
@@ -465,6 +813,122 @@ class App(QWidget):
             buttons = self.reid_buttons
         if server_name == 'reid_show':
             buttons = self.reid_show_buttons
+        if server_name == 'tts':
+            buttons = self.tts_buttons
+        if server_name == 'tts_show':
+            buttons = self.tts_show_buttons
+            from code.ai_server.text_to_speech.config import EnvConfig
+            env = EnvConfig()
+            #result = redis_show(path)
+            r = redis.Redis(host='localhost', port=6379, db=0)  
+            if path == 'tts_text':
+                key = env.redis_text_flag  
+            else:
+                key = env.redis_sound_flag
+            result_text = ""
+            list_values = r.lrange(key, 0, -1)
+            for value in list_values:
+                dict_value = json.loads(value)  
+                result_text += dict_value['seq']
+                result_text += ' '
+                result_text += dict_value['text']    
+                if 'path' in dict_value.keys():
+                    result_text += ' '
+                    result_text += dict_value['path']
+                result_text += '\r\n'
+            self.tts_text_edit.setText(result_text)
+                
+        if server_name == 'tts_send':
+            text = self.tts_text_send_edit.toPlainText()
+            if text!="":
+                from code.ai_server.text_to_speech.config import EnvConfig
+                env = EnvConfig()
+                r = redis.Redis(host='localhost', port=6379, db=0)  
+                def get_now_YMDhmsms():
+                    timestamp = time.time()
+                    dt_object = datetime.datetime.fromtimestamp(timestamp)  
+                    # 获取毫秒部分  
+                    milliseconds = int((timestamp - int(timestamp)) * 1000)  
+                    # 格式化日期和时间字符串，并手动添加毫秒  
+                    formatted_time = dt_object.strftime("%Y%m%d%H%M%S") + str(milliseconds).zfill(3)  
+                    #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
+                    return formatted_time
+                def set_tts_text(redis_object,redis_key,text):
+                    time_str = get_now_YMDhmsms()
+                    push_dict = {
+                        'seq':time_str,
+                        'text':text,
+                        'time':time_str
+                    }
+                    #推送到Redis  
+                    try:
+                        redis_object.rpush(redis_key, json.dumps(push_dict))
+                    except Exception as e:
+                        print (e)
+                set_tts_text(r,env.redis_text_flag,text)
+            return
+        
+        
+        if server_name == 'asr':
+            buttons = self.asr_buttons
+                      
+        
+        if server_name == 'asr_show':
+            buttons = self.asr_show_buttons
+            from code.ai_server.voice_to_word.config import EnvConfig
+            env = EnvConfig()
+            r = redis.Redis(host='localhost', port=6379, db=0)  
+            if path == 'asr_text':
+                key = env.redis_text_flag  
+            else:
+                key = env.redis_sound_flag
+            result_text = ""
+            list_values = r.lrange(key, 0, -1)
+            for value in list_values:
+                dict_value = json.loads(value)  
+                result_text += dict_value['seq']
+                result_text += ' '
+                result_text += dict_value['path']    
+                if 'text' in dict_value.keys():
+                    result_text += ' '
+                    result_text += dict_value['text']
+                result_text += '\r\n'
+            self.asr_text_edit.setText(result_text)
+        
+        if server_name == 'asr_send':
+            text = self.asr_text_send_edit.toPlainText()
+            if not os.path.exists(text):
+                self.asr_text_send_edit.setText('No file exist!')
+                return
+            if text!="":
+                from code.ai_server.voice_to_word.config import EnvConfig
+                env = EnvConfig()
+                r = redis.Redis(host='localhost', port=6379, db=0)  
+                def get_now_YMDhmsms():
+                    timestamp = time.time()
+                    dt_object = datetime.datetime.fromtimestamp(timestamp)  
+                    # 获取毫秒部分  
+                    milliseconds = int((timestamp - int(timestamp)) * 1000)  
+                    # 格式化日期和时间字符串，并手动添加毫秒  
+                    formatted_time = dt_object.strftime("%Y%m%d%H%M%S") + str(milliseconds).zfill(3)  
+                    #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
+                    return formatted_time
+                        
+                def set_asr_voice(redis_object,redis_key,path):
+                    time_str = get_now_YMDhmsms()
+                    push_dict = {
+                        'seq':time_str,
+                        'path':path,
+                        'time':time_str
+                    }
+                    #推送到Redis  
+                    try:
+                        redis_object.rpush(redis_key, json.dumps(push_dict))
+                    except Exception as e:
+                        print (e)
+                set_asr_voice(r,env.redis_sound_flag,text)
+            return
+        
         # 执行BAT文件  
         process = QProcess(self)  
         process.start(path)  
