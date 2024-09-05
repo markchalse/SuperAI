@@ -21,11 +21,11 @@ def get_now_YMDhmsms():
     return formatted_time
 
 
-def set_asr_voice(redis_object,redis_key,path):
+def set_chatbot_ask(redis_object,redis_key,ask):
     time_str = get_now_YMDhmsms()
     push_dict = {
         'seq':time_str,
-        'path':path,
+        'ask':ask,
         'time':time_str
     }
     #推送到Redis  
@@ -35,7 +35,7 @@ def set_asr_voice(redis_object,redis_key,path):
         print (e)
         
 
-def get_redis_asr(redis_object,redis_key):
+def get_redis_chatbot(redis_object,redis_key):
     list_values = redis_object.lrange(redis_key, 0, -1)
     result = []
     for value in list_values:  
@@ -48,12 +48,12 @@ def get_redis_asr(redis_object,redis_key):
             print(f"无法将字符串 {value} 转换为字典")  
     return result
 
-def push_asr_result(redis_object,redis_key,seq,text,file_path):
+def push_chatbot_answer(redis_object,redis_key,seq,answer,ask):
     push_dict = {
         'seq':seq,
-        'path':file_path,
+        'ask':ask,
         'time':get_now_YMDhmsms(),
-        'text':text
+        'answer':answer
     }
     #推送到Redis  
     try:
@@ -63,27 +63,27 @@ def push_asr_result(redis_object,redis_key,seq,text,file_path):
 
 
 def check_clear_redis(redis_obj,env = EnvConfig()):
-    from utils import read_asr_log
-    asr_log = read_asr_log()
-    asr_sound_count = redis_obj.llen(env.redis_sound_flag)
-    if asr_sound_count>env.MAX_LEN:
+    from utils import read_chatbot_log
+    chatbot_log = read_chatbot_log()
+    chat_ask_count = redis_obj.llen(env.redis_ask_flag)
+    if chat_ask_count>env.MAX_LEN:
         try:
-            for i in range(asr_sound_count-env.MAX_LEN):
-                redis_str = redis_obj.lindex(env.redis_sound_flag, 0)
+            for i in range(chat_ask_count-env.MAX_LEN):
+                redis_str = redis_obj.lindex(env.redis_ask_flag, 0)
                 json_dict = json.loads(redis_str)
-                if json_dict['seq'] in asr_log.keys():
-                    redis_obj.lpop(env.redis_sound_flag)
+                if json_dict['seq'] in chatbot_log.keys():
+                    redis_obj.lpop(env.redis_ask_flag)
                 else:
                     break
-            print ('clean asr sound redis memory ready!')
+            print ('clean chatbot ask redis memory ready!')
             
         except Exception as e:
             print (e)
             
-    if redis_obj.llen(env.redis_text_flag)>env.MAX_LEN:
+    if redis_obj.llen(env.redis_answer_flag)>env.MAX_LEN:
         try:
-            redis_obj.ltrim(env.redis_text_flag, -env.MAX_LEN, -1)  # 只保留列表中最新的10个元素
-            print ('clean asr word redis memory ready!')
+            redis_obj.ltrim(env.redis_answer_flag, -env.MAX_LEN, -1)  # 只保留列表中最新的10个元素
+            print ('clean chatbot answer redis memory ready!')
         except Exception as e:
             print (e)
     
@@ -108,4 +108,4 @@ def redis_show(redis_key):
  
 if __name__ == "__main__":
     r = redis.Redis(host='localhost', port=6379, db=0)
-    set_asr_voice(r,'ai_asr_sound',r'F:\workspace\majun\img\asr_example.wav')
+    set_chatbot_ask(r,'ai_chatbot_ask',r'介绍一下你自己')

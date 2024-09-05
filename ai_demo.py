@@ -9,6 +9,7 @@ import time
 import datetime
 
 BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\code"
+#BASE_PATH = r"G:\workspace\majun\code\SuperAI\code"
 
 #-----------------------------------------------
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"data_sensor\camera_sensor\script")
@@ -16,6 +17,7 @@ FACE_RECOGNITION_PATH = os.path.join(BASE_PATH,r"ai_server\face_recognition\scri
 PERSON_REID_PATH = os.path.join(BASE_PATH,r"ai_server\person_reid\script")
 TTS_PATH = os.path.join(BASE_PATH,r"ai_server\text_to_speech\script")
 ASR_PATH = os.path.join(BASE_PATH,r"ai_server\voice_to_word\script")
+CHATBOT_PATH = os.path.join(BASE_PATH,r"ai_server\chatbot\script")
 
 
 class App(QWidget):  
@@ -656,7 +658,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_start_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_start.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        chatbot_start_btn.clicked.connect(lambda checked, path=os.path.join(CHATBOT_PATH,'chatbot_start.bat') , server_name='chatbot' : self.execute_bat(path,server_name))
         
         chatbot_activate_btn = QPushButton(f'激活', self)
         chatbot_activate_btn.setStyleSheet("QPushButton {"
@@ -665,7 +667,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_activate_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_activate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        chatbot_activate_btn.clicked.connect(lambda checked, path=os.path.join(CHATBOT_PATH,'chatbot_activate.bat') , server_name='chatbot' : self.execute_bat(path,server_name))
 
         
         chatbot_deactive_btn = QPushButton(f'挂起', self)
@@ -675,7 +677,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_deactive_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_deactivate.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        chatbot_deactive_btn.clicked.connect(lambda checked, path=os.path.join(CHATBOT_PATH,'chatbot_deactivate.bat') , server_name='chatbot' : self.execute_bat(path,server_name))
 
         
         chatbot_offline_btn = QPushButton(f'下线', self)
@@ -685,7 +687,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_offline_btn.clicked.connect(lambda checked, path=os.path.join(ASR_PATH,'asr_down.bat') , server_name='asr' : self.execute_bat(path,server_name))
+        chatbot_offline_btn.clicked.connect(lambda checked, path=os.path.join(CHATBOT_PATH,'chatbot_down.bat') , server_name='chatbot' : self.execute_bat(path,server_name))
 
         
         chatbot_redis_show_btn = QPushButton(f'显示对话请求', self)
@@ -695,7 +697,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_redis_show_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_show' : self.execute_bat(path,server_name))
+        chatbot_redis_show_btn.clicked.connect(lambda checked, path='chatbot_ask' , server_name='chatbot_show' : self.execute_bat(path,server_name))
 
         
         chatbot_redis_show_down_btn = QPushButton(f'显示对话回答', self)
@@ -705,7 +707,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_redis_show_down_btn.clicked.connect(lambda checked, path='asr_text' , server_name='asr_show' : self.execute_bat(path,server_name))
+        chatbot_redis_show_down_btn.clicked.connect(lambda checked, path='chatbot_answer' , server_name='chatbot_show' : self.execute_bat(path,server_name))
 
 
         chatbot_text_send_btn = QPushButton(f'发送对话', self)
@@ -715,7 +717,7 @@ class App(QWidget):
                                   "QPushButton:hover {"
                                   "  background-color: rgb(0, 255, 0);"
                                   "}")
-        chatbot_text_send_btn.clicked.connect(lambda checked, path='asr_sound' , server_name='asr_send' : self.execute_bat(path,server_name))
+        chatbot_text_send_btn.clicked.connect(lambda checked, path='chatbot_ask' , server_name='chatbot_send' : self.execute_bat(path,server_name))
 
         
         # 将按钮加入列表  
@@ -928,6 +930,68 @@ class App(QWidget):
                         print (e)
                 set_asr_voice(r,env.redis_sound_flag,text)
             return
+
+        
+        
+        if server_name == 'chatbot':
+            buttons = self.chatbot_buttons
+            
+        if server_name == 'chatbot_show':
+            buttons = self.chatbot_show_buttons
+            from code.ai_server.chatbot.config import EnvConfig
+            env = EnvConfig()
+            r = redis.Redis(host='localhost', port=6379, db=0)  
+            if path == 'chatbot_ask':
+                key = env.redis_ask_flag 
+            else:
+                key = env.redis_answer_flag
+            result_text = ""
+            list_values = r.lrange(key, 0, -1)
+            for value in list_values:
+                dict_value = json.loads(value)  
+                result_text += dict_value['seq']
+                result_text += ' '
+                result_text += dict_value['ask']    
+                if 'answer' in dict_value.keys():
+                    result_text += ' '
+                    result_text += dict_value['answer']
+                result_text += '\r\n'
+            self.chatbot_text_edit.setText(result_text)
+        
+        if server_name == 'chatbot_send':
+            text = self.chatbot_text_send_edit.toPlainText()
+            if text == '':
+                self.chatbot_text_send_edit.setText('words are empty!')
+                return
+            else:
+                from code.ai_server.chatbot.config import EnvConfig
+                env = EnvConfig()
+                r = redis.Redis(host='localhost', port=6379, db=0)  
+                def get_now_YMDhmsms():
+                    timestamp = time.time()
+                    dt_object = datetime.datetime.fromtimestamp(timestamp)  
+                    # 获取毫秒部分  
+                    milliseconds = int((timestamp - int(timestamp)) * 1000)  
+                    # 格式化日期和时间字符串，并手动添加毫秒  
+                    formatted_time = dt_object.strftime("%Y%m%d%H%M%S") + str(milliseconds).zfill(3)  
+                    #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
+                    return formatted_time
+                        
+                def set_chatbot_ask(redis_object,redis_key,ask_str):
+                    time_str = get_now_YMDhmsms()
+                    push_dict = {
+                        'seq':time_str,
+                        'ask':ask_str,
+                        'time':time_str
+                    }
+                    #推送到Redis  
+                    try:
+                        redis_object.rpush(redis_key, json.dumps(push_dict))
+                    except Exception as e:
+                        print (e)
+                set_chatbot_ask(r,env.redis_ask_flag,text)
+            return
+        
         
         # 执行BAT文件  
         process = QProcess(self)  
