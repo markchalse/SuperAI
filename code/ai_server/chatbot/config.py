@@ -12,7 +12,7 @@ class EnvConfig:
             self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
             
         elif self.platform == "QT":
-            self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
+            self.chatbot_workspace = r"G:\workspace\majun\temp\chatbot"
         
         self.chatbot_log_path = os.path.join(self.chatbot_workspace,'CHATBOT.LOG')
         
@@ -25,11 +25,15 @@ class EnvConfig:
         #main redis
         
         self.redis_ask_flag = 'ai_chatbot_ask'
-        self.redis_answer_flag = 'ai_asr_answer'
+        self.redis_answer_flag = 'ai_chatbot_answer'
         
         
         #redis tools
         self.MAX_LEN = 3
         
         #utils GLM
-        self.server_url = "http://192.168.161.241:5000/chat"
+        #Kejiyun 5G
+        #self.server_url = "http://192.168.161.241:5000/chat"
+        
+        #Readmi 5G
+        self.server_url = "http://192.168.31.84:5000/chat"
