@@ -1,5 +1,10 @@
 Hello I am Super AI.
 
+quick clone
+
+git clone https://mirror.ghproxy.com/https://github.com/markchalse/SuperAI.git
+
+
 # 脚本路径说明
 `/script`
 
