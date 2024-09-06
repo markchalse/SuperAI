@@ -28,7 +28,7 @@ def get_image_from_redis(redis_connect,key):
     camera_json_str = redis_connect.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
     camera_dict = json_dict['device']
-    print ('%s : %s'%(camera_dict['my_id'],camera_dict['time']))
+    print ('%s : %s'%(json_dict['my_id'],json_dict['time']))
     base64_str = camera_dict['data']
     if base64_str is not None:
         image_data = base64.b64decode(base64_str)
@@ -36,7 +36,7 @@ def get_image_from_redis(redis_connect,key):
         image_array = np.frombuffer(image_data, dtype=np.uint8)
         # 将一维数组转换为正确的形状 (480, 640, 3)
         image_array_reshaped = image_array.reshape((int(camera_dict['height']), int(camera_dict['width']), 3))
-        return image_array_reshaped,camera_dict['time']
+        return image_array_reshaped,json_dict['time']
     else:
         return None,None
     
@@ -64,12 +64,13 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
     push_dict = {"device":{'type_id':'101',
                            'device_id':'51',
                            'num_id':'0',
-                           'my_id':'101_51_0',
                            'width':str(width),
                            'height':str(height),
-                           'time':get_now_YMDhmsms(),
                            'data':base64_str,
-                           'person':person_dict}}
+                           'person':person_dict},
+                 'my_id':'101_51_0',
+                 'time':get_now_YMDhmsms()
+                 }
     #camer_name = 'front_single'
     
     image_store = json.dumps(push_dict)

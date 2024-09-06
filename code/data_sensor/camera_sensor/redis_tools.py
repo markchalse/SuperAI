@@ -50,9 +50,10 @@ def push_image_to_redis(redis_object,processed_image,activate_step):
                            'my_id':'101_1_0',
                            'width':str(width),
                            'height':str(height),
-                           'time':get_now_YMDhmsms(),
-                           'data':base64_str}}
-                           #'data':image_str}}
+                           'data':base64_str},
+                 "my_id":'101_1_0',
+                 'time':get_now_YMDhmsms()
+                 }
     #camer_name = 'front_single'
     
     image_store = json.dumps(push_dict)
