@@ -14,7 +14,7 @@ def get_image_from_redis(key):
     camera_json_str = r.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
     camera_dict = json_dict['device']
-    print ('%s : %s'%(json_dict['type_id'],json_dict['time']))
+    print ('%s : %s'%(json_dict['my_id'],json_dict['time']))
     base64_str = camera_dict['data']
     person_dict = camera_dict['person']
     
