@@ -2,7 +2,8 @@
 import time
 import cv2
 import redis
-from redis_tools import push_image_to_redis
+import os
+from redis_tools import push_image_to_redis,push_server_pid
 from thread_controller import ThreadControler
 
 class CameraSensor:
@@ -43,11 +44,19 @@ class CameraSensor:
 
 if __name__ == '__main__':
     print ('camera sensor server online!')
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    
+    
     time.sleep(0.3)
     tc = ThreadControler()
     tc.init_thread()
-    print ('wait for activate...')
     
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','camera_sensor',str(pid))
+    
+    print ('wait for activate...')
     while True:
         if not tc.check_activate():
             time.sleep(3)
@@ -72,7 +81,7 @@ if __name__ == '__main__':
             
                 #print (activate_step)
                 if activate_step%30 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         #cv2.destroyAllWindows()
                         break
                     if not tc.check_activate():
@@ -85,8 +94,8 @@ if __name__ == '__main__':
                 if activate_step>10000000:
                     activate_step = 0
         
-        if not tc.check_on_line():
-            print ('person ReID server offline!')
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
+            print ('camera sensor server offline!')
             time.sleep(1)
             break
         

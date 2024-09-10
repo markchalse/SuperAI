@@ -5,7 +5,7 @@ class EnvConfig:
         self.platform = "LAPTOP"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
 
         #main 
-        self.chat_model_name = "GLM"#"BAIDU"#"GLM" #"BAIDU"#"GLM"#"BAIDU"#"GLM"  #"BAIDU"
+        self.chat_model_name = "BAIDU"#"GLM" #"BAIDU"#"GLM"#"BAIDU"#"GLM"  #"BAIDU"
         
         #login
         if self.platform == "LAPTOP":

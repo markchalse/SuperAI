@@ -27,7 +27,7 @@ class AutomaticSpeechRecognition:
 
 
 if __name__ == "__main__":
-    asr_engine = AutomaticSpeechRecognition()
+    
     asr_log = read_asr_log()
     # 初始化Redis连接  
     r = redis.Redis(host='localhost', port=6379, db=0)  
@@ -37,6 +37,13 @@ if __name__ == "__main__":
     env = EnvConfig()
     tc = ThreadControler()
     tc.init_thread()
+    
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','asr',str(pid))
+    
+    
     print ('wait for activate...')
     
     
@@ -50,7 +57,7 @@ if __name__ == "__main__":
             activate_step = 0
             
             print ('voice to word server activate!')
-            
+            asr_engine = AutomaticSpeechRecognition()
             while True:
                 activate_step+=1 
                 
@@ -83,7 +90,7 @@ if __name__ == "__main__":
                         
             
                 if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         break
                     if not tc.check_activate():        
                         print ('deactivate')
@@ -97,7 +104,7 @@ if __name__ == "__main__":
                 if activate_step>10000000:
                     activate_step = 0    
         
-        if not tc.check_on_line():
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
             print ('voice to word server offline!')
             time.sleep(1)
             break

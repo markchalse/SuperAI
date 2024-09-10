@@ -86,3 +86,12 @@ def push_image_to_redis(redis_object,processed_image,activate_step):
         print (e)
     
     #return count
+    
+def push_server_pid(redis_object,pid_redis_key,server_name,pid):
+    data = {'server':server_name,
+            'pid':str(pid),
+            'time':get_now_YMDhmsms()}
+    try:
+        redis_object.rpush(pid_redis_key, json.dumps(data))
+    except Exception as e:
+        print (e)

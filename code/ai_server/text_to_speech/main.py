@@ -18,6 +18,11 @@ if __name__ == "__main__":
     env = EnvConfig()
     tc = ThreadControler()
     tc.init_thread()
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','tts',str(pid))
+    
     print ('wait for activate...')
     
     while True:
@@ -54,7 +59,7 @@ if __name__ == "__main__":
                         push_tts_result(r,env.redis_sound_flag,text_dict['seq'],text_dict['text'],sound_file_name)
             
                 if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         break
                     if not tc.check_activate():        
                         print ('deactivate')
@@ -68,7 +73,7 @@ if __name__ == "__main__":
                 if activate_step>10000000:
                     activate_step = 0    
         
-        if not tc.check_on_line():
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
             print ('text to sound server offline!')
             time.sleep(1)
             break

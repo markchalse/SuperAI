@@ -52,6 +52,12 @@ if __name__ == "__main__":
     tc = ThreadControler(env=EnvConfig(server='feature_collect'))
     tc.init_thread()
     
+    r =  redis.Redis(host='localhost', port=6379, db=0)
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','feature_collect',str(pid))
+    
+    
     print ('wait for activate...')
     
     while True:
@@ -65,7 +71,7 @@ if __name__ == "__main__":
                 fc.start()
 
                 if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         cv2.destroyAllWindows()
                         break
                     if not tc.check_activate():
@@ -78,7 +84,7 @@ if __name__ == "__main__":
                 if activate_step>10000000:
                     activate_step = 0
         
-        if not tc.check_on_line():
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
             print ('person feature collect server offline!')
             time.sleep(1)
             break

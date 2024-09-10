@@ -108,3 +108,13 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
         r.rpush(image_list_key, image_store)
     except Exception as e:
         print (e)
+        
+        
+def push_server_pid(redis_object,pid_redis_key,server_name,pid):
+    data = {'server':server_name,
+            'pid':str(pid),
+            'time':get_now_YMDhmsms()}
+    try:
+        redis_object.rpush(pid_redis_key, json.dumps(data))
+    except Exception as e:
+        print (e)

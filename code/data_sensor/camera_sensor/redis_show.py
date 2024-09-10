@@ -4,6 +4,7 @@ import redis
 import base64
 import numpy as np
 import json
+import os
 
 # 初始化Redis连接  
 r = redis.Redis(host='localhost', port=6379, db=0)  
@@ -54,7 +55,8 @@ def get_image_from_redis(key):
         return None 
       
     
-      
+pid = os.getpid()
+print(f"当前进程的PID是: {pid}")      
     
 r.set('ai_singal_camera_redis_show_down','0')   
 

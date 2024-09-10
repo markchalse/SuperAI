@@ -55,8 +55,8 @@ class EdgeTTS:
                 time.sleep(0.01) #延迟10ms
                 print ("edge tts Try again !")
                 
- 
-#et = EdgeTTS()               
-et = PyTTS()               
-#et.text2voice_file("你好，欢迎使用场景智慧学习平台，很高兴和你说话,你叫什么名字？",'test.mp3')
-et.text2voice_file("豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。",'test.mp3')
+if __name__ == "__main___": 
+    #et = EdgeTTS()               
+    et = PyTTS()               
+    #et.text2voice_file("你好，欢迎使用场景智慧学习平台，很高兴和你说话,你叫什么名字？",'test.mp3')
+    et.text2voice_file("豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。",'test.mp3')

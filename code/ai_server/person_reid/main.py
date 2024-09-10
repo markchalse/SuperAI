@@ -166,6 +166,12 @@ if __name__ == "__main__":
     time.sleep(0.3)
     tc = ThreadControler(EnvConfig(server='person_reid'))
     tc.init_thread()
+    
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','person_reid',str(pid))
+    
     print ('wait for activate...')
     
     while True:
@@ -180,7 +186,7 @@ if __name__ == "__main__":
                 p_reid.start(activate_step)
                 
                 if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         cv2.destroyAllWindows()
                         break
                     if not tc.check_activate():
@@ -194,7 +200,7 @@ if __name__ == "__main__":
                     activate_step = 0
             
         
-        if not tc.check_on_line():
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
             print ('person ReID server offline!')
             time.sleep(1)
             break

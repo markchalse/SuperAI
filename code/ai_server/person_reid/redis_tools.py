@@ -21,7 +21,7 @@ def get_now_YMDhmsms():
 def get_name_boxes_from_redis(redis_connect,key):
     camera_json_str = redis_connect.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
-    return json_dict['device']['person'],json_dict['device']['time']
+    return json_dict['device']['person'],json_dict['time']
 
     
 def get_image_from_redis(redis_connect,key):
@@ -107,3 +107,12 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
         print (e)
     
     #return count
+    
+def push_server_pid(redis_object,pid_redis_key,server_name,pid):
+    data = {'server':server_name,
+            'pid':str(pid),
+            'time':get_now_YMDhmsms()}
+    try:
+        redis_object.rpush(pid_redis_key, json.dumps(data))
+    except Exception as e:
+        print (e)

@@ -8,16 +8,17 @@ import json
 import time
 import datetime
 
-BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\code"
+BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
 #BASE_PATH = r"G:\workspace\majun\code\SuperAI\code"
 
 #-----------------------------------------------
-CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"data_sensor\camera_sensor\script")
-FACE_RECOGNITION_PATH = os.path.join(BASE_PATH,r"ai_server\face_recognition\script")
-PERSON_REID_PATH = os.path.join(BASE_PATH,r"ai_server\person_reid\script")
-TTS_PATH = os.path.join(BASE_PATH,r"ai_server\text_to_speech\script")
-ASR_PATH = os.path.join(BASE_PATH,r"ai_server\voice_to_word\script")
-CHATBOT_PATH = os.path.join(BASE_PATH,r"ai_server\chatbot\script")
+CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor\script")
+FACE_RECOGNITION_PATH = os.path.join(BASE_PATH,r"code\ai_server\face_recognition\script")
+PERSON_REID_PATH = os.path.join(BASE_PATH,r"code\ai_server\person_reid\script")
+TTS_PATH = os.path.join(BASE_PATH,r"code\ai_server\text_to_speech\script")
+ASR_PATH = os.path.join(BASE_PATH,r"code\ai_server\voice_to_word\script")
+CHATBOT_PATH = os.path.join(BASE_PATH,r"code\ai_server\chatbot\script")
+DAEMON_PATH = os.path.join(BASE_PATH,r"ai_daemon\script")
 
 
 class App(QWidget):  
@@ -750,6 +751,116 @@ class App(QWidget):
         
         
         
+        
+        
+        
+        
+        
+        
+        #------------------------------------------------------------------------- ai deamon  ----------------------------------------------------
+        
+        
+        daemon_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.daemon_buttons = []
+        #self.reid_show_buttons = []
+        
+        # 创建按钮  
+        daemon_start_btn = QPushButton(f'启动守护进程', self)
+        daemon_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        daemon_start_btn.clicked.connect(lambda checked, path=os.path.join(DAEMON_PATH,'ai_start.bat') , server_name='daemon' : self.execute_bat(path,server_name))
+        
+        
+        '''
+        feature_collect_activate_btn = QPushButton(f'激活', self)
+        feature_collect_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_activate_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_activate.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+
+        
+        feature_collect_deactive_btn = QPushButton(f'挂起', self)
+        feature_collect_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_deactive_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_deactive.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+
+        '''
+        daemon_offline_btn = QPushButton(f'AI系统下线', self)
+        daemon_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        daemon_offline_btn.clicked.connect(lambda checked, path=os.path.join(DAEMON_PATH,'ai_down.bat') , server_name='daemon' : self.execute_bat(path,server_name))
+
+        
+        daemon_refresh_btn = QPushButton(f'清理守护残余', self)
+        daemon_refresh_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        daemon_refresh_btn.clicked.connect(lambda checked, path=os.path.join(DAEMON_PATH,'ai_refresh.bat') , server_name='daemon' : self.execute_bat(path,server_name))
+
+        
+        #feature_collect_redis_show_down_btn = QPushButton(f'', self)
+        #feature_collect_redis_show_down_btn.setStyleSheet("QPushButton {"
+        #                          "  background-color: rgb(255, 255, 255);"
+        #                          "}"
+        #                          "QPushButton:hover {"
+        #                          "  background-color: rgb(0, 255, 0);"
+        #                          "}")
+        #reid_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'person_reid_redis_show_down.bat') , server_name='reid_show' : self.execute_bat(path,server_name))
+
+        
+
+        
+        # 将按钮加入列表  
+        self.daemon_buttons.append(daemon_start_btn) 
+        self.daemon_buttons.append(daemon_offline_btn)  
+        self.daemon_buttons.append(daemon_refresh_btn)  
+        
+        
+        # 添加到布局
+        daemon_layout.addWidget(daemon_start_btn)
+        daemon_layout.addWidget(daemon_offline_btn)
+        daemon_layout.addWidget(daemon_refresh_btn)
+        
+        
+        daemon_label = QLabel('AI守护系统控制', self)
+        
+        daemon_container = QWidget(self)  
+        daemon_container.setLayout(daemon_layout)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        split_label0 = QLabel('----------------------------------------------------', self)
         split_label1 = QLabel('----------------------------------------------------', self)
         split_label2 = QLabel('----------------------------------------------------', self)
         split_label3 = QLabel('----------------------------------------------------', self)
@@ -757,6 +868,12 @@ class App(QWidget):
         split_label5 = QLabel('----------------------------------------------------', self)
         split_label6 = QLabel('----------------------------------------------------', self)
         # 将包含子布局的QWidget添加到主布局中  
+        
+        mainLayout.addWidget(daemon_label)
+        mainLayout.addWidget(daemon_container)
+        mainLayout.addWidget(split_label0)
+        
+        
         mainLayout.addWidget(camera_label)
         mainLayout.addWidget(camera_container)
         mainLayout.addWidget(split_label1)
@@ -991,6 +1108,9 @@ class App(QWidget):
                         print (e)
                 set_chatbot_ask(r,env.redis_ask_flag,text)
             return
+        
+        if server_name == 'daemon':
+            buttons = self.daemon_buttons
         
         
         # 执行BAT文件  

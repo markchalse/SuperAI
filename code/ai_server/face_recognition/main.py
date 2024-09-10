@@ -2,9 +2,10 @@
 import redis
 import cv2
 import time
+import os
 
 
-from redis_tools import get_image_from_redis,push_image_to_redis
+from redis_tools import get_image_from_redis,push_image_to_redis,push_server_pid
 from login import LogIn
 
 from thread_controller import ThreadControler
@@ -20,6 +21,11 @@ if __name__ == "__main__":
     env = EnvConfig()
     tc = ThreadControler()
     tc.init_thread()
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','face_recognition',str(pid))
+    
     print ('wait for activate...')
     
     while True:
@@ -45,8 +51,8 @@ if __name__ == "__main__":
                 
                 
                 
-                if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                if activate_step%30 == 0:
+                    if not (not tc.check_on_line()) or (not tc.check_ai_online()):
                         cv2.destroyAllWindows()
                         break
                     if not tc.check_activate():
@@ -60,8 +66,8 @@ if __name__ == "__main__":
                     activate_step = 0
         
         
-        if not tc.check_on_line():
-            print ('person ReID server offline!')
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
+            print ('face recognition server offline!')
             time.sleep(1)
             break
         

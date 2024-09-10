@@ -1,6 +1,18 @@
 @echo off
 echo -------------load env------------->> load-env.log
-for /f "delims== tokens=1* eol=#" %%i in (env.txt) do (
+:: 获取批处理文件所在的目录  
+set "batDir=%~dp0"  
+:: 构造env.txt文件的完整路径  
+set "envFilePath=%batDir%env.txt" 
+
+:: 检查env.txt文件是否存在  
+if not exist "%envFilePath%" (  
+    echo env.txt not found at %envFilePath%  
+    pause  
+    exit /b 1  
+)  
+
+for /f "delims== tokens=1* eol=#" %%i in (%envFilePath%) do (
 	set %%i=%%j
 	echo %%i=%%j>> load-env.log
 )

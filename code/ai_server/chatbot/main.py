@@ -29,6 +29,11 @@ if __name__ == "__main__":
         chat_ai = BaiduAI()
     tc = ThreadControler()
     tc.init_thread()
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','chatbot',str(pid))
+    
     print ('wait for activate...')
     
     
@@ -72,7 +77,7 @@ if __name__ == "__main__":
                         
             
                 if activate_step%20 == 0:
-                    if not tc.check_on_line():
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
                         break
                     if not tc.check_activate():        
                         print ('deactivate')
@@ -86,7 +91,7 @@ if __name__ == "__main__":
                 if activate_step>10000000:
                     activate_step = 0    
         
-        if not tc.check_on_line():
+        if (not tc.check_on_line()) or (not tc.check_ai_online()):
             print ('caht bot server offline!')
             time.sleep(1)
             break
