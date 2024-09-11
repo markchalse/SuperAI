@@ -9,7 +9,7 @@ import time
 import datetime
 
 BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
-#BASE_PATH = r"G:\workspace\majun\code\SuperAI\code"
+#BASE_PATH = r"G:\workspace\majun\code\SuperAI"
 
 #-----------------------------------------------
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor\script")
@@ -818,14 +818,14 @@ class App(QWidget):
         daemon_refresh_btn.clicked.connect(lambda checked, path=os.path.join(DAEMON_PATH,'ai_refresh.bat') , server_name='daemon' : self.execute_bat(path,server_name))
 
         
-        #feature_collect_redis_show_down_btn = QPushButton(f'', self)
-        #feature_collect_redis_show_down_btn.setStyleSheet("QPushButton {"
-        #                          "  background-color: rgb(255, 255, 255);"
-        #                          "}"
-        #                          "QPushButton:hover {"
-        #                          "  background-color: rgb(0, 255, 0);"
-        #                          "}")
-        #reid_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'person_reid_redis_show_down.bat') , server_name='reid_show' : self.execute_bat(path,server_name))
+        daemon_set_online_btn = QPushButton(f'设置上线', self)
+        daemon_set_online_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        daemon_set_online_btn.clicked.connect(lambda checked, path=os.path.join(DAEMON_PATH,'ai_online.bat') , server_name='daemon' : self.execute_bat(path,server_name))
 
         
 
@@ -833,13 +833,15 @@ class App(QWidget):
         # 将按钮加入列表  
         self.daemon_buttons.append(daemon_start_btn) 
         self.daemon_buttons.append(daemon_offline_btn)  
-        self.daemon_buttons.append(daemon_refresh_btn)  
+        self.daemon_buttons.append(daemon_refresh_btn) 
+        self.daemon_buttons.append(daemon_set_online_btn)  
         
         
         # 添加到布局
         daemon_layout.addWidget(daemon_start_btn)
         daemon_layout.addWidget(daemon_offline_btn)
         daemon_layout.addWidget(daemon_refresh_btn)
+        daemon_layout.addWidget(daemon_set_online_btn)
         
         
         daemon_label = QLabel('AI守护系统控制', self)
