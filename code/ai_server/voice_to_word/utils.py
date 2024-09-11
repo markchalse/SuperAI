@@ -6,6 +6,8 @@ from config import EnvConfig
 import base64
 
 def add_asr_log(seq, path, word):
+    if word=='':
+        word='empty'
     env = EnvConfig()
     with open(env.ASR_LOG_PATH, 'a') as file:  
         word64 = base64.b64encode(word.encode('utf-8'))

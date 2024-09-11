@@ -4,7 +4,8 @@ import json
 import numpy as np
 import time
 import datetime
-
+from PIL import Image 
+from io import BytesIO
 from config import EnvConfig
 
 def get_now_YMDhmsms():
@@ -17,37 +18,61 @@ def get_now_YMDhmsms():
     #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
     return formatted_time
 
+def base642numpyarray(base64_str,height,width):
+    # Decode Base64 string to image data
+    image_data = base64.b64decode(base64_str)
+    # Convert image data to NumPy array
+    image_array = np.frombuffer(image_data, dtype=np.uint8)
+    # 将一维数组转换为正确的形状 (720, 1280, 3)
+    image_array_reshaped = image_array.reshape((int(height), int(width), 3)) 
+    return image_array_reshaped
+
+def base642jpg2numpyarray(base64_str):
+    # 将Base64字符串解码为二进制数据 
+    jpg_data = base64.b64decode(base64_str) 
+    # 使用BytesIO将二进制数据转换为Pillow图像  
+    image = Image.open(BytesIO(jpg_data)) 
+    np_image = np.array(image)  
+    # OpenCV使用BGR，所以如果需要，这里将RGB转换为BGR  
+    #np_image = np_image[:, :, ::-1]  
+    return np_image
+
+
 def get_image_from_redis(redis_connect,key):
     camera_json_str = redis_connect.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
     camera_dict = json_dict['device']
     print ('%s : %s'%(json_dict['my_id'],json_dict['time']))
     base64_str = camera_dict['data']
-    
     if base64_str is not None:
-        #print (base64_str)
-        
-        # Decode Base64 string to image data
-        image_data = base64.b64decode(base64_str)
-        #print (image_data)
-        
-        # Convert image data to NumPy array
-        image_array = np.frombuffer(image_data, dtype=np.uint8)
-        #print(image_array)
-        #print(image_array.shape)
-        # 将一维数组转换为正确的形状 (480, 640, 3)
-        #image_array_reshaped = image_array.reshape((480, 640, 3))
-        image_array_reshaped = image_array.reshape((int(camera_dict['height']), int(camera_dict['width']), 3))
-        
-
-        #print (image_array_reshaped.shape)
-        return image_array_reshaped
-        #print(processed_image)
+        #majun 2024.9.11
+        #image_array = base642numpyarray(base64_str,camera_dict['height'],camera_dict['width'])
+        image_array = base642jpg2numpyarray(base64_str)
+        return image_array
     else:
         return None
-    
-    
+
+
+def array2base64(numpy_array):
+    # 数组直接转字符串
+    image_str = numpy_array.tostring()
+    # Encode array string to Base64
+    base64_str = base64.b64encode(image_str).decode('utf-8')  
+    return base64_str  
+
+def array2jpg2base64(numpy_array,quality=90):
+    # 将NumPy数组转换为PIL图像  
+    image = Image.fromarray(numpy_array.astype('uint8'))  # 确保数据类型为uint8  
+    # 转换为JPEG格式  
+    buffered = BytesIO()  
+    image.save(buffered, format="JPEG", quality=quality)  
+    # 将图像内容从BytesIO对象中获取，并编码为Base64  
+    image_bytes = buffered.getvalue()  
+    base64_str = base64.b64encode(image_bytes).decode('utf-8')  
+    return base64_str
+        
 def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,activate_step):  
+    #print ('activate_step :',activate_step)
     env = EnvConfig()
     
     r = redis_object
@@ -55,12 +80,10 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
     height = processed_image.shape[0]
     width = processed_image.shape[1]
     
-    # 将图像序列化为字节流  
-    #image_bytes = pickle.dumps(processed_image)  
-    # 数组直接转字符串
-    image_str = processed_image.tostring()
-    # Encode array string to Base64
-    base64_str = base64.b64encode(image_str).decode('utf-8')
+    #majun 2024.9.11
+    #base64_str = array2base64(processed_image)
+    base64_str = array2jpg2base64(processed_image)
+    #print ('str len:',len(base64_str))
     
     person_dict = {}
     for person in result_dict.values():

@@ -52,7 +52,8 @@ if __name__ == "__main__":
                 
                 
                 if activate_step%30 == 0:
-                    if not (not tc.check_on_line()) or (not tc.check_ai_online()):
+                    if (not tc.check_on_line()) or (not tc.check_ai_online()):
+                        print ('offline in activate!')
                         cv2.destroyAllWindows()
                         break
                     if not tc.check_activate():

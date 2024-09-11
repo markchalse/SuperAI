@@ -6,26 +6,38 @@ import numpy as np
 import json
 import os
 
+from PIL import Image 
+from io import BytesIO
+
+
 # 初始化Redis连接  
 r = redis.Redis(host='localhost', port=6379, db=0)  
+
+
+def base642numpyarray(base64_str,height,width):
+    # Decode Base64 string to image data
+    image_data = base64.b64decode(base64_str)
+    # Convert image data to NumPy array
+    image_array = np.frombuffer(image_data, dtype=np.uint8)
+    # 将一维数组转换为正确的形状 (720, 1280, 3)
+    image_array_reshaped = image_array.reshape((int(height), int(width), 3)) 
+    return image_array_reshaped
+
+def base642jpg2numpyarray(base64_str):
+    # 将Base64字符串解码为二进制数据 
+    jpg_data = base64.b64decode(base64_str) 
+    # 使用BytesIO将二进制数据转换为Pillow图像  
+    image = Image.open(BytesIO(jpg_data)) 
+    np_image = np.array(image)  
+    # OpenCV使用BGR，所以如果需要，这里将RGB转换为BGR  
+    #np_image = np_image[:, :, ::-1]  
+    return np_image
+
+
+
   
 def get_image_from_redis(key):  
-    
-    # 从Redis获取图像数据的字节流  
-    #image_bytes = r.rpop(key)  
-    #if image_bytes is None:  
-    #    return None  
-    # 使用pickle反序列化图像数据  
-    #processed_image = pickle.loads(image_bytes) 
-    
-    # Decode array to image
-    #processed_image = cv2.imdecode(image_array_reshaped, cv2.IMREAD_COLOR)
-    
-    #return processed_image  
-    
-    
     #base64
-    #base64_str = r.rpop(key)
     camera_json_str = r.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
     camera_dict = json_dict['device']
@@ -33,24 +45,10 @@ def get_image_from_redis(key):
     base64_str = camera_dict['data']
     
     if base64_str is not None:
-        #print (base64_str)
-        
-        # Decode Base64 string to image data
-        image_data = base64.b64decode(base64_str)
-        #print (image_data)
-        
-        # Convert image data to NumPy array
-        image_array = np.frombuffer(image_data, dtype=np.uint8)
-        #print(image_array)
-        #print(image_array.shape)
-        # 将一维数组转换为正确的形状 (480, 640, 3)
-        #image_array_reshaped = image_array.reshape((480, 640, 3))
-        image_array_reshaped = image_array.reshape((int(camera_dict['height']), int(camera_dict['width']), 3))
-        
-
-        #print (image_array_reshaped.shape)
-        return image_array_reshaped
-        #print(processed_image)
+        #majun 2024.9.11
+        #image_array = base642numpyarray(base64_str,camera_dict['height'],camera_dict['width'])
+        image_array = base642jpg2numpyarray(base64_str)
+        return image_array
     else:
         return None 
       

@@ -5,6 +5,8 @@ import json
 import time
 import datetime
 import numpy as np
+from PIL import Image 
+from io import BytesIO
 
 def get_now_YMDhmsms():
     timestamp = time.time()
@@ -16,6 +18,39 @@ def get_now_YMDhmsms():
     #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
     return formatted_time
 
+def numpy_to_base64(numpy_array, quality=95):  
+    #- quality: JPEG图像的质量，范围从1（最差）到95（最好）。 
+    # 将NumPy数组转换为PIL图像  
+    image = Image.fromarray(numpy_array.astype('uint8'))  # 确保数据类型为uint8  
+    # 转换为JPEG格式  
+    buffered = BytesIO()  
+    image.save(buffered, format="JPEG", quality=quality)  
+    
+     # 将图像内容从BytesIO对象中获取，并编码为Base64  
+    image_bytes = buffered.getvalue()  
+    base64_str = base64.b64encode(image_bytes).decode('utf-8')  
+      
+    return base64_str
+  
+def array2base64(numpy_array):
+    # 数组直接转字符串
+    image_str = numpy_array.tostring()
+    # Encode array string to Base64
+    base64_str = base64.b64encode(image_str).decode('utf-8')  
+    return base64_str  
+
+def array2jpg2base64(numpy_array,quality=90):
+    # 将NumPy数组转换为PIL图像  
+    image = Image.fromarray(numpy_array.astype('uint8'))  # 确保数据类型为uint8  
+    # 转换为JPEG格式  
+    buffered = BytesIO()  
+    image.save(buffered, format="JPEG", quality=quality)  
+    # 将图像内容从BytesIO对象中获取，并编码为Base64  
+    image_bytes = buffered.getvalue()  
+    base64_str = base64.b64encode(image_bytes).decode('utf-8')  
+    return base64_str
+  
+
 def push_image_to_redis(redis_object,processed_image,activate_step):  
     r = redis_object
     
@@ -23,25 +58,9 @@ def push_image_to_redis(redis_object,processed_image,activate_step):
     height = processed_image.shape[0]
     width = processed_image.shape[1]
     
-    ##########################################################################
-    # 将图像序列化为字节流  
-    #image_bytes = pickle.dumps(processed_image)  
-    # 数组直接转字符串
-    #image_str = np.array2string(processed_image.flatten())
-    #processed_image = processed_image.flatten()
-    #print (processed_image.shape)
-    #image_str = str(processed_image)
-    #print (len(image_str))
-    #print (image_str)
-    
-    #new_array = eval(image_str)
-    #print(new_array.shape)
-    ##########################################################################
-    image_str = processed_image.tostring()
-    #print (image_str)
-    
-    # Encode array string to Base64
-    base64_str = base64.b64encode(image_str).decode('utf-8')
+    #majun 2024.9.11
+    #base64_str = array2base64(processed_image)
+    base64_str = array2jpg2base64(processed_image)
     
     
     push_dict = {"device":{'type_id':'101',

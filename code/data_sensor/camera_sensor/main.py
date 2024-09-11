@@ -38,7 +38,13 @@ class CameraSensor:
         
         # 显示画面  
         #cv2.imshow('frame', frame) 
+        
+        
+        #2024.9.11
         push_image_to_redis(self.redis_connect,frame,activate_step)
+        #push_jpg_image_to_redis(self.redis_connect,frame,activate_step)
+        
+        
         return True
         
 
