@@ -27,7 +27,7 @@ def base642jpg2numpyarray(base64_str):
     image = Image.open(BytesIO(jpg_data)) 
     np_image = np.array(image)  
     # OpenCV使用BGR，所以如果需要，这里将RGB转换为BGR  
-    #np_image = np_image[:, :, ::-1]  
+    np_image = np_image[:, :, ::-1]  
     return np_image
   
 def get_image_from_redis(key):  

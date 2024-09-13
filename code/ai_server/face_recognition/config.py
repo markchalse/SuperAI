@@ -7,7 +7,8 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.login_students_path = r"F:\workspace\majun\img\student"
+            #self.login_students_path = r"F:\workspace\majun\img\student"
+            self.login_students_path = r"F:\majun\img\student"
         elif self.platform == "QT":
             self.login_students_path = r"G:\workspace\majun\img\student"
             
@@ -24,8 +25,8 @@ class EnvConfig:
         #cut face
         self.FACE_MARK_color_random = False  #每个人不同颜色
         self.fixed_recognize_color = (0,255,0)
-        #self.fixed_unrecognize_color = (255,0,0)
-        self.fixed_unrecognize_color = (0,0,255) #bgr
+        self.fixed_unrecognize_color = (255,0,0) #rgb
+        #self.fixed_unrecognize_color = (0,0,255) #bgr
         self.face_line_width = 25
         self.face_name_size = 5
         self.text_size = 2 #字体大小 1 2 3 4 5

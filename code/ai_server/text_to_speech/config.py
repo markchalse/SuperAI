@@ -7,7 +7,8 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.tts_workspace = r"F:\workspace\majun\img\tts_files"
+            #self.tts_workspace = r"F:\workspace\majun\img\tts_files"
+            self.tts_workspace = r"F:\majun\tmp\tts_files"
         elif self.platform == "QT":
             self.tts_workspace = r"G:\workspace\majun\temp\tts_files"
         

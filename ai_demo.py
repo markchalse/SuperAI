@@ -8,8 +8,9 @@ import json
 import time
 import datetime
 
-BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
+#BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
 #BASE_PATH = r"G:\workspace\majun\code\SuperAI"
+BASE_PATH = r"F:\majun\code\SuperAI"
 
 #-----------------------------------------------
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor\script")

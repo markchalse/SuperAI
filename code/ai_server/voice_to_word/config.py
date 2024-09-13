@@ -7,8 +7,10 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.ASR_MODEL_PATH = r"F:\workspace\majun\zhiyuanchuang_space\model_endpoints\voice_word\speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
-            self.ASR_LOG_PATH = r"F:\workspace\majun\img\ASR.LOG"
+            #self.ASR_MODEL_PATH = r"F:\workspace\majun\zhiyuanchuang_space\model_endpoints\voice_word\speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
+            self.ASR_MODEL_PATH = r"F:\majun\model_endpoints\voice_word\speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
+            #self.ASR_LOG_PATH = r"F:\workspace\majun\img\ASR.LOG"
+            self.ASR_LOG_PATH = r"F:\majun\tmp\ASR.LOG"
         elif self.platform == "QT":
             self.ASR_MODEL_PATH = r"G:\workspace\majun\models\super_ai\voice_word\speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch"
             self.ASR_LOG_PATH = r"G:\workspace\majun\temp\ASR.LOG"

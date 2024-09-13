@@ -14,8 +14,8 @@ from redis_tools import *
 class AutomaticSpeechRecognition:
     def __init__(self):
         self.env = EnvConfig()
-        self.asr_model = pipeline(task=Tasks.auto_speech_recognition,
-                                  model=self.env.ASR_MODEL_PATH)
+        print(self.env.ASR_MODEL_PATH)
+        self.asr_model = pipeline(task=str(Tasks.auto_speech_recognition),model=self.env.ASR_MODEL_PATH)
     
     def recognition(self,wav_path):
         if os.path.exists(wav_path):

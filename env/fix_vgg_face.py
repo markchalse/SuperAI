@@ -4,7 +4,8 @@ import os
 #anaconda_base_path = r"D:\anaconda3_5_2\envs"
 #anaconda_base_path = r"G:\workspace\majun\conda\envs"
 #anaconda_base_path = r"C:\Users\1\.conda\envs"
-anaconda_base_path = r"F:\workspace\majun\conda\envs"
+#anaconda_base_path = r"F:\workspace\majun\conda\envs"
+anaconda_base_path = r"G:\anaconda\envs"
 env_name = "scene_learning_1"
 
 env_path = os.path.join(anaconda_base_path,env_name)

@@ -80,6 +80,9 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
     height = processed_image.shape[0]
     width = processed_image.shape[1]
     
+    #处理成RGB颜色
+    processed_image = processed_image[:, :, ::-1] 
+    
     #majun 2024.9.11
     #base64_str = array2base64(processed_image)
     base64_str = array2jpg2base64(processed_image)

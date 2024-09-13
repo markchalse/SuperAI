@@ -9,7 +9,8 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
+            #self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
+            self.chatbot_workspace = r"F:\majun\tmp\chatbot"
             
         elif self.platform == "QT":
             self.chatbot_workspace = r"G:\workspace\majun\temp\chatbot"
