@@ -1,7 +1,7 @@
 # pip install pyqt5 -i https://pypi.tuna.tsinghua.edu.cn/simple
 import sys  
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel , QHBoxLayout, QTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel , QHBoxLayout, QTextEdit,  QScrollArea 
 from PyQt5.QtCore import Qt,QProcess  
 import redis
 import json
@@ -20,6 +20,7 @@ TTS_PATH = os.path.join(BASE_PATH,r"code\ai_server\text_to_speech\script")
 ASR_PATH = os.path.join(BASE_PATH,r"code\ai_server\voice_to_word\script")
 CHATBOT_PATH = os.path.join(BASE_PATH,r"code\ai_server\chatbot\script")
 DAEMON_PATH = os.path.join(BASE_PATH,r"ai_daemon\script")
+SCORE_PATH = os.path.join(BASE_PATH,r"code\ai_server\score\script")
 
 
 class App(QWidget):  
@@ -33,7 +34,7 @@ class App(QWidget):
     def initUI(self):  
         # 设置窗口  
         self.setWindowTitle('AI调试工具')  
-        self.setGeometry(400, 400, 1200, 500)  
+        self.setGeometry(400, 400, 1200, 1500)  
   
         # 创建主垂直布局  
         mainLayout = QVBoxLayout()
@@ -855,6 +856,120 @@ class App(QWidget):
         
         
         
+        #------------------------------------------------------------------------- score -------------------------------------------
+        
+        
+        score_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.score_buttons = []
+        self.score_show_buttons = []
+        
+        # 创建按钮  
+        score_start_btn = QPushButton(f'启动AI评分', self)
+        score_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_start_btn.clicked.connect(lambda checked, path=os.path.join(SCORE_PATH,'score_start.bat') , server_name='score' : self.execute_bat(path,server_name))
+        
+        score_activate_btn = QPushButton(f'激活', self)
+        score_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_activate_btn.clicked.connect(lambda checked, path=os.path.join(SCORE_PATH,'score_activate.bat') , server_name='score' : self.execute_bat(path,server_name))
+
+        
+        score_deactive_btn = QPushButton(f'挂起', self)
+        score_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_deactive_btn.clicked.connect(lambda checked, path=os.path.join(SCORE_PATH,'score_deactivate.bat') , server_name='score' : self.execute_bat(path,server_name))
+
+        
+        score_offline_btn = QPushButton(f'下线', self)
+        score_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_offline_btn.clicked.connect(lambda checked, path=os.path.join(SCORE_PATH,'score_down.bat') , server_name='score' : self.execute_bat(path,server_name))
+
+        
+        score_cfg_redis_show_btn = QPushButton(f'显示课程设置', self)
+        score_cfg_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_cfg_redis_show_btn.clicked.connect(lambda checked, path='score_cfg' , server_name='score_show' : self.execute_bat(path,server_name))
+
+        
+        score_redis_show_btn = QPushButton(f'显示课程分数', self)
+        score_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_redis_show_btn.clicked.connect(lambda checked, path='score_result' , server_name='score_show' : self.execute_bat(path,server_name))
+
+
+        score_cfg_send_btn = QPushButton(f'发送课程设置', self)
+        score_cfg_send_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        score_cfg_send_btn.clicked.connect(lambda checked, path='score_cfg' , server_name='score_send' : self.execute_bat(path,server_name))
+
+        
+        # 将按钮加入列表  
+        self.score_buttons.append(score_start_btn) 
+        self.score_buttons.append(score_activate_btn)  
+        self.score_buttons.append(score_deactive_btn)  
+        self.score_buttons.append(score_offline_btn)  
+        
+        self.score_show_buttons.append(score_cfg_redis_show_btn)
+        self.score_show_buttons.append(score_redis_show_btn)
+        
+        # 添加到布局
+        score_layout.addWidget(score_start_btn)
+        score_layout.addWidget(score_activate_btn)
+        score_layout.addWidget(score_deactive_btn)
+        score_layout.addWidget(score_offline_btn)
+        score_layout.addWidget(score_cfg_redis_show_btn)
+        score_layout.addWidget(score_redis_show_btn)
+        
+        
+        score_label = QLabel('AI评分服务', self)        
+        # 或者创建一个可以多行显示的 QTextEdit
+        self.score_text_edit = QTextEdit(self)
+
+        self.score_text_send_edit = QTextEdit(self)
+
+        score_container = QWidget(self)  
+        score_container.setLayout(score_layout)
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -870,6 +985,7 @@ class App(QWidget):
         split_label4 = QLabel('----------------------------------------------------', self)
         split_label5 = QLabel('----------------------------------------------------', self)
         split_label6 = QLabel('----------------------------------------------------', self)
+        split_label7 = QLabel('----------------------------------------------------', self)
         # 将包含子布局的QWidget添加到主布局中  
         
         mainLayout.addWidget(daemon_label)
@@ -912,13 +1028,34 @@ class App(QWidget):
         mainLayout.addWidget(self.chatbot_text_edit)
         mainLayout.addWidget(self.chatbot_text_send_edit)
         mainLayout.addWidget(chatbot_text_send_btn)
+        mainLayout.addWidget(split_label7)
+        
+        
+        mainLayout.addWidget(score_label)
+        mainLayout.addWidget(score_container)
+        mainLayout.addWidget(self.score_text_edit)
+        mainLayout.addWidget(self.score_text_send_edit)
+        mainLayout.addWidget(score_cfg_send_btn)
+        
         # 创建一个QLabel并添加到主布局中  
         #label = QLabel('这是一个标签', self)  
         #mainLayout.addWidget(label)  
   
+        # 创建一个QWidget作为滚动区域的内容  
+        content_widget = QWidget()  
+        content_widget.setLayout(mainLayout)  
+        
+        # 创建一个QScrollArea  
+        scroll_area = QScrollArea()  
+        scroll_area.setWidgetResizable(True)  # 允许滚动区域的内容大小变化  
+        scroll_area.setWidget(content_widget)  # 设置滚动区域的内容
          
         # 设置窗口的主布局  
-        self.setLayout(mainLayout) 
+        #self.setLayout(mainLayout) 
+        
+        # 设置窗口的布局，并将滚动区域添加到窗口中  
+        self.setLayout(QVBoxLayout())  
+        self.layout().addWidget(scroll_area)  
   
     def execute_bat(self, path , server_name):
         if server_name == 'camera':
@@ -1115,7 +1252,57 @@ class App(QWidget):
         if server_name == 'daemon':
             buttons = self.daemon_buttons
         
+        if server_name == 'score':
+            buttons = self.score_buttons
         
+        if server_name == 'score_show':
+            buttons = self.score_show_buttons
+            from code.ai_server.score.config import EnvConfig
+            env = EnvConfig()
+            r = redis.Redis(host='localhost', port=6379, db=0)  
+            
+            redis_text = ""
+            if path == 'score_cfg':
+                key = env.project_cfg_key 
+                redis_text = r.get(key).decode('utf-8')
+            else:
+                key = env.project_scores_key
+                redis_text = r.lindex(key, -1)
+            if redis_text=="":
+                self.score_text_edit.setText("redis empty!")
+            else:
+                try:
+                    result_text = ""
+                    print (redis_text)
+                    result_dict = json.loads(redis_text)  
+                    print (result_dict)
+                    for r_key in result_dict.keys():
+                        result_text+= str(r_key)
+                        result_text+= "   "
+                        result_text+= str(result_dict[r_key])
+                        result_text += '\r\n'
+                    self.score_text_edit.setText(result_text) 
+                except Exception as e:
+                    print (e)
+                    self.score_text_edit.setText(str(e))
+            
+        if server_name == 'score_send':
+            text = self.score_text_send_edit.toPlainText()
+            if text == '':
+                self.score_text_send_edit.setText('words are empty!')
+                return
+            else:
+                from code.ai_server.score.config import EnvConfig
+                env = EnvConfig()
+                r = redis.Redis(host='localhost', port=6379, db=0)  
+                #推送到Redis  
+                try:
+                    r.set(env.project_cfg_key, text)
+                except Exception as e:
+                    print (e)
+                    self.score_text_send_edit.setText(str(e))
+            return
+            
         # 执行BAT文件  
         process = QProcess(self)  
         process.start(path)  

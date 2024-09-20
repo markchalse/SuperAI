@@ -115,8 +115,11 @@ class BaiduAI:
             json_string = response.text
             #print(json_string)
             result_dict = json.loads(json_string)
-            print (result_dict['result'])
-            return result_dict['result']
+            answer = result_dict['result']
+            answer = answer.replace("文心一言","小智")
+            answer = answer.replace("百度","问界")
+            print (answer)
+            return answer
         except Exception as e:
             print (e)
             return e
