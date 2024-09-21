@@ -16,6 +16,8 @@ def get_redis_project_cfg(redis_object,redis_key):
         project_cfg = redis_object.get(redis_key).decode('utf-8')
         return json.loads(project_cfg)
         #return {'params':[0.9,0.8,0.7],'mission':['mission1','mission2','mission3']}
+        #return {"params":[0.9,0.8,0.7],"mission":["mission1","mission2","mission3"]}
+        
     except Exception as e:
         print (e)
         return {}

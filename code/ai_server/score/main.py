@@ -79,7 +79,9 @@ if __name__ == "__main__":
                 '''
                 
                 
-                push_redis_project_scores(r,env.project_scores_key,{'project1':{'scores':[5,3,4],'comment':['best','good','bad']}})
+                #push_redis_project_scores(r,env.project_scores_key,{'project1':{'scores':[5,3,4],'comment':['best','good','bad']}})
+                from utils import jungement
+                push_redis_project_scores(r,env.project_scores_key,jungement(len(proj_cfg['mission'])))
                 
                 print ('class over , goodbye !')
                 time.sleep(1)
