@@ -14,6 +14,7 @@ BASE_PATH = r"F:\majun\code\SuperAI"
 
 #-----------------------------------------------
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor\script")
+CAMERA_SENSOR_TOP_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor_top\script")
 FACE_RECOGNITION_PATH = os.path.join(BASE_PATH,r"code\ai_server\face_recognition\script")
 PERSON_REID_PATH = os.path.join(BASE_PATH,r"code\ai_server\person_reid\script")
 TTS_PATH = os.path.join(BASE_PATH,r"code\ai_server\text_to_speech\script")
@@ -21,6 +22,7 @@ ASR_PATH = os.path.join(BASE_PATH,r"code\ai_server\voice_to_word\script")
 CHATBOT_PATH = os.path.join(BASE_PATH,r"code\ai_server\chatbot\script")
 DAEMON_PATH = os.path.join(BASE_PATH,r"ai_daemon\script")
 SCORE_PATH = os.path.join(BASE_PATH,r"code\ai_server\score\script")
+SMDPR_PATH = os.path.join(BASE_PATH,r"code\ai_server\servo_motor_drive_platform_recognition\script")
 
 
 class App(QWidget):  
@@ -50,7 +52,7 @@ class App(QWidget):
         #self.camera_signals = []
         
         # 创建按钮  
-        camera_start_btn = QPushButton(f'启动摄像头', self)
+        camera_start_btn = QPushButton(f'启动前摄像头', self)
         camera_start_btn.setStyleSheet("QPushButton {"
                                   "  background-color: rgb(255, 255, 255);"
                                   "}"
@@ -129,12 +131,105 @@ class App(QWidget):
         camera_layout.addWidget(camera_redis_show_down_btn)
         
         
-        camera_label = QLabel('摄像头服务', self)
+        camera_label = QLabel('前摄像头服务', self)
         
         camera_container = QWidget(self)  
         camera_container.setLayout(camera_layout)
         
+        #------------------------------------------------------------------------- camera top -------------------------------------------
+        
+        camera_top_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.camera_top_buttons = []
+        self.camera_top_show_buttons = []
+        #self.camera_signals = []
+        
+        # 创建按钮  
+        camera_top_start_btn = QPushButton(f'启动顶摄像头', self)
+        camera_top_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_start_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_sensor_start.bat') , server_name='camera_top' : self.execute_bat(path,server_name))
+        
+        camera_top_activate_btn = QPushButton(f'激活', self)
+        camera_top_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_activate_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_sensor_activate.bat') , server_name='camera_top' : self.execute_bat(path,server_name))
 
+        
+        camera_top_deactive_btn = QPushButton(f'挂起', self)
+        camera_top_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_deactive_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_sensor_deactivate.bat') , server_name='camera_top' : self.execute_bat(path,server_name))
+
+        
+        camera_top_offline_btn = QPushButton(f'下线', self)
+        camera_top_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_offline_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_sensor_down.bat') , server_name='camera_top' : self.execute_bat(path,server_name))
+
+        
+        camera_top_redis_show_btn = QPushButton(f'显示', self)
+        camera_top_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_redis_show_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_redis_show.bat') , server_name='camera_top_show' : self.execute_bat(path,server_name))
+
+        
+        camera_top_redis_show_down_btn = QPushButton(f'关闭显示', self)
+        camera_top_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        camera_top_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(CAMERA_SENSOR_TOP_PATH,'camera_redis_show_down.bat') , server_name='camera_top_show' : self.execute_bat(path,server_name))
+
+        
+
+        
+        # 将按钮加入列表  
+        self.camera_top_buttons.append(camera_top_start_btn) 
+        self.camera_top_buttons.append(camera_top_activate_btn)  
+        self.camera_top_buttons.append(camera_top_deactive_btn)  
+        self.camera_top_buttons.append(camera_top_offline_btn)  
+        
+        self.camera_top_show_buttons.append(camera_top_redis_show_btn)
+        self.camera_top_show_buttons.append(camera_top_redis_show_down_btn)
+        
+        # 添加到布局
+        camera_top_layout.addWidget(camera_top_start_btn)
+        camera_top_layout.addWidget(camera_top_activate_btn)
+        camera_top_layout.addWidget(camera_top_deactive_btn)
+        camera_top_layout.addWidget(camera_top_offline_btn)
+        camera_top_layout.addWidget(camera_top_redis_show_btn)
+        camera_top_layout.addWidget(camera_top_redis_show_down_btn)
+        
+        
+        camera_top_label = QLabel('顶摄像头服务', self)
+        
+        camera_top_container = QWidget(self)  
+        camera_top_container.setLayout(camera_top_layout)
+        
         
         #------------------------------------------------------------------------- face recognition -------------------------------------------
         
@@ -967,25 +1062,315 @@ class App(QWidget):
         
         
         
+        #------------------------------------------------------------------------- face recognition -------------------------------------------
+        
+        
+        face_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.face_buttons = []
+        self.face_show_buttons = []
+        
+        # 创建按钮  
+        face_start_btn = QPushButton(f'启动人脸识别', self)
+        face_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_start_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_start.bat') , server_name='face' : self.execute_bat(path,server_name))
+        
+        face_activate_btn = QPushButton(f'激活', self)
+        face_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_activate_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_activate.bat') , server_name='face' : self.execute_bat(path,server_name))
+
+        
+        face_deactive_btn = QPushButton(f'挂起', self)
+        face_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_deactive_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_deactivate.bat') , server_name='face' : self.execute_bat(path,server_name))
+
+        
+        face_offline_btn = QPushButton(f'下线', self)
+        face_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_offline_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_down.bat') , server_name='face' : self.execute_bat(path,server_name))
+
+        
+        face_redis_show_btn = QPushButton(f'显示', self)
+        face_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_redis_show_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_redis_show.bat') , server_name='face_show' : self.execute_bat(path,server_name))
+
+        
+        face_redis_show_down_btn = QPushButton(f'关闭显示', self)
+        face_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        face_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(FACE_RECOGNITION_PATH,'face_recognition_redis_show_down.bat') , server_name='face_show' : self.execute_bat(path,server_name))
+
+        
+
+        
+        # 将按钮加入列表  
+        self.face_buttons.append(face_start_btn) 
+        self.face_buttons.append(face_activate_btn)  
+        self.face_buttons.append(face_deactive_btn)  
+        self.face_buttons.append(face_offline_btn)  
+        
+        self.face_show_buttons.append(face_redis_show_btn)
+        self.face_show_buttons.append(face_redis_show_down_btn)
+        
+        # 添加到布局
+        face_layout.addWidget(face_start_btn)
+        face_layout.addWidget(face_activate_btn)
+        face_layout.addWidget(face_deactive_btn)
+        face_layout.addWidget(face_offline_btn)
+        face_layout.addWidget(face_redis_show_btn)
+        face_layout.addWidget(face_redis_show_down_btn)
+        
+        
+        face_label = QLabel('人脸识别服务', self)
+        
+        face_container = QWidget(self)  
+        face_container.setLayout(face_layout)
+        
+
+        #------------------------------------------------------------------------- person ReID feature collect -------------------------------------------
+        
+        
+        feature_collect_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.feature_collect_buttons = []
+        #self.reid_show_buttons = []
+        
+        # 创建按钮  
+        feature_collect_start_btn = QPushButton(f'启动构建特征', self)
+        feature_collect_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_start_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_start.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+        
+        feature_collect_activate_btn = QPushButton(f'激活', self)
+        feature_collect_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_activate_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_activate.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+
+        
+        feature_collect_deactive_btn = QPushButton(f'挂起', self)
+        feature_collect_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_deactive_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_deactive.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+
+        
+        feature_collect_offline_btn = QPushButton(f'下线', self)
+        feature_collect_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        feature_collect_offline_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'feature_collect_down.bat') , server_name='feature_collect' : self.execute_bat(path,server_name))
+
+        
+        feature_collect_redis_show_btn = QPushButton(f'', self)
+        feature_collect_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        #reid_redis_show_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'person_reid_redis_show.bat') , server_name='reid_show' : self.execute_bat(path,server_name))
+
+        
+        feature_collect_redis_show_down_btn = QPushButton(f'', self)
+        feature_collect_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        #reid_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(PERSON_REID_PATH,'person_reid_redis_show_down.bat') , server_name='reid_show' : self.execute_bat(path,server_name))
+
+        
+
+        
+        # 将按钮加入列表  
+        self.feature_collect_buttons.append(feature_collect_start_btn) 
+        self.feature_collect_buttons.append(feature_collect_activate_btn)  
+        self.feature_collect_buttons.append(feature_collect_deactive_btn)  
+        self.feature_collect_buttons.append(feature_collect_offline_btn)  
+        
+        #self.reid_show_buttons.append(reid_redis_show_btn)
+        #self.reid_show_buttons.append(reid_redis_show_down_btn)
+        
+        # 添加到布局
+        feature_collect_layout.addWidget(feature_collect_start_btn)
+        feature_collect_layout.addWidget(feature_collect_activate_btn)
+        feature_collect_layout.addWidget(feature_collect_deactive_btn)
+        feature_collect_layout.addWidget(feature_collect_offline_btn)
+        feature_collect_layout.addWidget(feature_collect_redis_show_btn)
+        feature_collect_layout.addWidget(feature_collect_redis_show_down_btn)
+        
+        
+        feature_collect_label = QLabel('行人重识别特征构建服务', self)
+        
+        feature_collect_container = QWidget(self)  
+        feature_collect_container.setLayout(feature_collect_layout)
         
         
         
         
         
         
+        #-------------------------------------------------------------------------servo_motor_drive_platform_recognition -------------------------------------------
         
+        
+        smdpr_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.smdpr_buttons = []
+        self.smdpr_show_buttons = []
+        
+        # 创建按钮  
+        smdpr_start_btn = QPushButton(f'启动伺服电机平台识别', self)
+        smdpr_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_start_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_start.bat') , server_name='smdpr' : self.execute_bat(path,server_name))
+        
+        smdpr_activate_btn = QPushButton(f'激活', self)
+        smdpr_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_activate_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_activate.bat') , server_name='smdpr' : self.execute_bat(path,server_name))
+
+        
+        smdpr_deactive_btn = QPushButton(f'挂起', self)
+        smdpr_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_deactive_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_deactivate.bat') , server_name='smdpr' : self.execute_bat(path,server_name))
+
+        
+        smdpr_offline_btn = QPushButton(f'下线', self)
+        smdpr_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_offline_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_down.bat') , server_name='smdpr' : self.execute_bat(path,server_name))
+
+        
+        smdpr_redis_show_btn = QPushButton(f'显示', self)
+        smdpr_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_redis_show_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_redis_show.bat') , server_name='smdpr_show' : self.execute_bat(path,server_name))
+
+        
+        smdpr_redis_show_down_btn = QPushButton(f'关闭显示', self)
+        smdpr_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpr_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(SMDPR_PATH,'smdpr_show_down.bat') , server_name='smdpr_show' : self.execute_bat(path,server_name))
+
+        
+
+        
+        
+        # 将按钮加入列表  
+        self.smdpr_buttons.append(smdpr_start_btn) 
+        self.smdpr_buttons.append(smdpr_activate_btn)  
+        self.smdpr_buttons.append(smdpr_deactive_btn)  
+        self.smdpr_buttons.append(smdpr_offline_btn)  
+        
+        self.smdpr_show_buttons.append(smdpr_redis_show_btn)
+        self.smdpr_show_buttons.append(smdpr_redis_show_down_btn)
+        
+        # 添加到布局
+        smdpr_layout.addWidget(smdpr_start_btn)
+        smdpr_layout.addWidget(smdpr_activate_btn)
+        smdpr_layout.addWidget(smdpr_deactive_btn)
+        smdpr_layout.addWidget(smdpr_offline_btn)
+        smdpr_layout.addWidget(smdpr_redis_show_btn)
+        smdpr_layout.addWidget(smdpr_redis_show_down_btn)
+        
+        
+        smdpr_label = QLabel('伺服电机平台识别服务', self)
+        
+        smdpr_container = QWidget(self)  
+        smdpr_container.setLayout(smdpr_layout)
+        
+        
+        
+        
+        
+        
+        ################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
         
         
         
         
         split_label0 = QLabel('----------------------------------------------------', self)
         split_label1 = QLabel('----------------------------------------------------', self)
+        split_label1a = QLabel('----------------------------------------------------', self)
         split_label2 = QLabel('----------------------------------------------------', self)
         split_label3 = QLabel('----------------------------------------------------', self)
         split_label4 = QLabel('----------------------------------------------------', self)
         split_label5 = QLabel('----------------------------------------------------', self)
         split_label6 = QLabel('----------------------------------------------------', self)
         split_label7 = QLabel('----------------------------------------------------', self)
+        split_label8 = QLabel('----------------------------------------------------', self)
         # 将包含子布局的QWidget添加到主布局中  
         
         mainLayout.addWidget(daemon_label)
@@ -996,6 +1381,10 @@ class App(QWidget):
         mainLayout.addWidget(camera_label)
         mainLayout.addWidget(camera_container)
         mainLayout.addWidget(split_label1)
+        
+        mainLayout.addWidget(camera_top_label)
+        mainLayout.addWidget(camera_top_container)
+        mainLayout.addWidget(split_label1a)
         
         mainLayout.addWidget(face_label)
         mainLayout.addWidget(face_container)
@@ -1036,6 +1425,11 @@ class App(QWidget):
         mainLayout.addWidget(self.score_text_edit)
         mainLayout.addWidget(self.score_text_send_edit)
         mainLayout.addWidget(score_cfg_send_btn)
+        mainLayout.addWidget(split_label8)
+        
+        mainLayout.addWidget(smdpr_label)
+        mainLayout.addWidget(smdpr_container)
+        
         
         # 创建一个QLabel并添加到主布局中  
         #label = QLabel('这是一个标签', self)  
@@ -1062,6 +1456,10 @@ class App(QWidget):
             buttons = self.camera_buttons
         if server_name == 'camera_show':
             buttons = self.camera_show_buttons   
+        if server_name == 'camera_top':
+            buttons = self.camera_top_buttons
+        if server_name == 'camera_top_show':
+            buttons = self.camera_top_show_buttons   
         if server_name == 'face':
             buttons = self.face_buttons
         if server_name == 'face_show':
@@ -1302,6 +1700,11 @@ class App(QWidget):
                     print (e)
                     self.score_text_send_edit.setText(str(e))
             return
+        
+        if server_name == 'smdpr':
+            buttons = self.smdpr_buttons
+        if server_name == 'smdpr_show':
+            buttons = self.smdpr_show_buttons 
             
         # 执行BAT文件  
         process = QProcess(self)  

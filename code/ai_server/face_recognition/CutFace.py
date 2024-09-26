@@ -74,7 +74,7 @@ class CutFace():
             
             
             cv2.rectangle(pic_img, (x, y), (x+w, y+h), mark_color, self.env.face_line_width)
-            cv2.putText(pic_img, name, (x, y-self.env.face_line_width), cv2.FONT_HERSHEY_SIMPLEX, self.env.text_size, mark_color, self.env.face_name_size)
+            #cv2.putText(pic_img, name, (x, y-self.env.face_line_width), cv2.FONT_HERSHEY_SIMPLEX, self.env.text_size, mark_color, self.env.face_name_size)
         
         #print (pic_img.shape)
         return pic_img   
