@@ -3,18 +3,13 @@ import os
 class EnvConfig:
     def __init__(self):
         self.platform = "LAPTOP"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
-
-        #main 
-        self.chat_model_name = "GLM"#"BAIDU"#"GLM" #"BAIDU"#"GLM"#"BAIDU"#"GLM"  #"BAIDU"
         
         #login
         if self.platform == "LAPTOP":
-            self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
+            self.score_space = r"F:\majun\tmp\score"
             
         elif self.platform == "QT":
-            self.chatbot_workspace = r"G:\workspace\majun\temp\chatbot"
-        
-        #self.chatbot_log_path = os.path.join(self.chatbot_workspace,'CHATBOT.LOG')
+            self.score_space = r"G:\workspace\majun\temp\score"
         
         
         
@@ -28,18 +23,11 @@ class EnvConfig:
         self.project_scores_key = 'ai_project_scores'
         
         
-        #main redis
         
-        #self.redis_ask_flag = 'ai_chatbot_ask'
-        #self.redis_answer_flag = 'ai_chatbot_answer'
+        self.platform_traj_result_key = 'ai_platform_trajectory_result'
         
         
         #redis tools
         self.MAX_LEN = 3
         
-        #utils GLM
-        #Kejiyun 5G
-        #self.server_url = "http://192.168.161.241:5000/chat"
         
-        #Readmi 5G
-        #self.server_url = "http://192.168.31.84:5000/chat"

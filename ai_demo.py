@@ -23,6 +23,7 @@ CHATBOT_PATH = os.path.join(BASE_PATH,r"code\ai_server\chatbot\script")
 DAEMON_PATH = os.path.join(BASE_PATH,r"ai_daemon\script")
 SCORE_PATH = os.path.join(BASE_PATH,r"code\ai_server\score\script")
 SMDPR_PATH = os.path.join(BASE_PATH,r"code\ai_server\servo_motor_drive_platform_recognition\script")
+SMDPJ_PATH = os.path.join(BASE_PATH,r"code\ai_server\platform_trajectory\script")
 
 
 class App(QWidget):  
@@ -1352,6 +1353,108 @@ class App(QWidget):
         smdpr_container.setLayout(smdpr_layout)
         
         
+        #-------------------------------------------------------------------------servo_motor_drive_platform_trajectory -------------------------------------------
+        
+        
+        smdpj_layout = QHBoxLayout()
+        
+        # 按钮和状态灯  
+        self.smdpj_buttons = []
+        self.smdpj_show_buttons = []
+        
+        # 创建按钮  
+        smdpj_start_btn = QPushButton(f'伺服电机轨迹生成', self)
+        smdpj_start_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_start_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_start.bat') , server_name='smdpj' : self.execute_bat(path,server_name))
+        
+        smdpj_activate_btn = QPushButton(f'激活', self)
+        smdpj_activate_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_activate_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_activate.bat') , server_name='smdpj' : self.execute_bat(path,server_name))
+
+        
+        smdpj_deactive_btn = QPushButton(f'挂起', self)
+        smdpj_deactive_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_deactive_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_deactivate.bat') , server_name='smdpj' : self.execute_bat(path,server_name))
+
+        
+        smdpj_offline_btn = QPushButton(f'下线', self)
+        smdpj_offline_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_offline_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_down.bat') , server_name='smdpj' : self.execute_bat(path,server_name))
+
+        
+        smdpj_redis_show_btn = QPushButton(f'显示', self)
+        smdpj_redis_show_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_redis_show_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_redis_show.bat') , server_name='smdpj_show' : self.execute_bat(path,server_name))
+
+        
+        smdpj_redis_show_down_btn = QPushButton(f'关闭显示', self)
+        smdpj_redis_show_down_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smdpj_redis_show_down_btn.clicked.connect(lambda checked, path=os.path.join(SMDPJ_PATH,'smdpj_show_down.bat') , server_name='smdpj_show' : self.execute_bat(path,server_name))
+
+        
+        smpdj_id_send_btn = QPushButton(f'发送轨迹ID设置', self)
+        smpdj_id_send_btn.setStyleSheet("QPushButton {"
+                                  "  background-color: rgb(255, 255, 255);"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "  background-color: rgb(0, 255, 0);"
+                                  "}")
+        smpdj_id_send_btn.clicked.connect(lambda checked, path='smpdj_id' , server_name='smpdj_id_send' : self.execute_bat(path,server_name))
+        
+        
+        # 将按钮加入列表  
+        self.smdpj_buttons.append(smdpj_start_btn) 
+        self.smdpj_buttons.append(smdpj_activate_btn)  
+        self.smdpj_buttons.append(smdpj_deactive_btn)  
+        self.smdpj_buttons.append(smdpj_offline_btn)  
+        
+        self.smdpj_show_buttons.append(smdpj_redis_show_btn)
+        self.smdpj_show_buttons.append(smdpj_redis_show_down_btn)
+        
+        # 添加到布局
+        smdpj_layout.addWidget(smdpj_start_btn)
+        smdpj_layout.addWidget(smdpj_activate_btn)
+        smdpj_layout.addWidget(smdpj_deactive_btn)
+        smdpj_layout.addWidget(smdpj_offline_btn)
+        smdpj_layout.addWidget(smdpj_redis_show_btn)
+        smdpj_layout.addWidget(smdpj_redis_show_down_btn)
+        
+        
+        smdpj_label = QLabel('伺服电机平台轨迹生成服务', self)
+        self.smpdj_text_edit = QTextEdit(self)
+        smdpj_container = QWidget(self)  
+        smdpj_container.setLayout(smdpj_layout)
+        
         
         
         
@@ -1371,6 +1474,7 @@ class App(QWidget):
         split_label6 = QLabel('----------------------------------------------------', self)
         split_label7 = QLabel('----------------------------------------------------', self)
         split_label8 = QLabel('----------------------------------------------------', self)
+        split_label9 = QLabel('----------------------------------------------------', self)
         # 将包含子布局的QWidget添加到主布局中  
         
         mainLayout.addWidget(daemon_label)
@@ -1429,6 +1533,13 @@ class App(QWidget):
         
         mainLayout.addWidget(smdpr_label)
         mainLayout.addWidget(smdpr_container)
+        mainLayout.addWidget(split_label9)
+        
+        
+        mainLayout.addWidget(smdpj_label)
+        mainLayout.addWidget(smdpj_container)
+        mainLayout.addWidget(self.smpdj_text_edit)
+        mainLayout.addWidget(smpdj_id_send_btn)
         
         
         # 创建一个QLabel并添加到主布局中  
@@ -1706,6 +1817,27 @@ class App(QWidget):
         if server_name == 'smdpr_show':
             buttons = self.smdpr_show_buttons 
             
+        if server_name == 'smdpj':
+            buttons = self.smdpj_buttons
+        if server_name == 'smdpj_show':
+            buttons = self.smdpj_show_buttons 
+            
+        if server_name == 'smpdj_id_send':
+            text = self.smpdj_text_edit.toPlainText()
+            if text!="":
+                from code.ai_server.platform_trajectory.config import EnvConfig
+                env = EnvConfig()
+                r = redis.Redis(host='localhost', port=6379, db=0)  
+                #推送到Redis  
+                try:
+                    r.set(env.trajectory_id_key, text)
+                except Exception as e:
+                    print (e)
+                    self.smpdj_text_edit.setText(str(e))
+            return 
+                    
+            
+        ################################################################################################################################################################    
         # 执行BAT文件  
         process = QProcess(self)  
         process.start(path)  

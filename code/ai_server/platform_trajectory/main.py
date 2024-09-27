@@ -18,8 +18,6 @@ from utils import *
 
 
 if __name__ == "__main__":
-    #asr_engine = AutomaticSpeechRecognition()
-    #chatbot_log = read_chatbot_log()
     
     # 初始化Redis连接  
     r = redis.Redis(host='localhost', port=6379, db=0)  
@@ -43,27 +41,38 @@ if __name__ == "__main__":
             time.sleep(3)
         else:
             activate_step = 0
-            #track_tool = StartTrack()
             print ('servo motor drive platform trajectory server activate!')
+            
+            traj_pool = Trajectory()
+            
+            traj_id = r.get(env.trajectory_id_key).decode('utf-8')
+            print ('start tracking: %s'%traj_id)
             
             while True:
                 activate_step+=1 
                 
-                image,box = get_image_from_redis(r,env.smpdr_result_key)  
+                image,box,width,height = get_image_from_redis(r,env.smpdr_result_key)  
                 if image is None: 
                     print("No image available from Redis.")  
                     continue
                 if box!='[]':
                     box_array = str_array2np_array_float(box)
                     print (box_array)
-                #box = track_tool.get_tracker_results(image)
-                #if len(box) > 0:
-                #    print(box)
-                #    cv2.rectangle(image,(int(box[0]),int(box[1])),(int(box[2]),int(box[3])),(255,0,0),25)
-                #push_image_to_redis(r,env.smpdr_result_key,image,box,activate_step)
-                cv2.imshow('smdpr Image', image)        
-                if cv2.waitKey(1) & 0xFF == ord('q'):  
-                    break  
+                    traj_pool.trajx.append((box_array[0]+box_array[2])/2.0)
+                    traj_pool.trajy.append((box_array[1]+box_array[3])/2.0)
+                
+                traj_img = pil_draw_pic(int(width),int(height),traj_pool.trajx,traj_pool.trajy,1.0)
+                    
+                
+                push_image_to_redis(r,env.smpdj_result_key,traj_img,traj_pool.trajx,traj_pool.trajy,traj_id,activate_step)
+
+                
+                if activate_step%10 == 0:
+                    new_id = r.get(env.trajectory_id_key).decode('utf-8')
+                    if new_id!=traj_id:
+                        traj_id = new_id
+                        traj_pool = Trajectory()
+                        print ('start tracking: %s'%traj_id)
                 
                 if activate_step%20 == 0:
                     if (not tc.check_on_line()) or (not tc.check_ai_online()):
@@ -74,8 +83,6 @@ if __name__ == "__main__":
                         print ('wait for activate...')
                         break
                     
-                    # servo motor drive platform recognition clean
-                    #check_clear_redis(r,env=env)
                 
                 if activate_step>10000000:
                     activate_step = 0    
@@ -84,4 +91,4 @@ if __name__ == "__main__":
             print ('servo motor drive platform trajectory server offline!')
             time.sleep(1)
             break
-    cv2.destroyAllWindows()
+    

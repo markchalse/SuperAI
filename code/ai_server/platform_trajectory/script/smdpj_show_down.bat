@@ -20,5 +20,5 @@ echo -------------load env------------->> load-env.log
 set activate_path=%anaconda_path%\Scripts\activate.bat
 CALL %activate_path% %anaconda_path%
 CALL conda activate %conda_env_name%
-python %code_base_path%\code\ai_server\servo_motor_drive_platform_recognition\thread_controller.py --func redis_set --param ai_smdpr_redis_show_down 1
+python %code_base_path%\code\ai_server\platform_trajectory\thread_controller.py --func redis_set --param ai_smdpj_redis_show_down 1
 conda deactivate

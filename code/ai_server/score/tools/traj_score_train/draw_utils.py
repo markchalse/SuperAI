@@ -1,20 +1,9 @@
+
 import numpy as np 
 from PIL import Image, ImageDraw
 
-def str_array2np_array_float(str_array):
-    # 移除字符串两端的方括号  
-    cleaned_str = str_array[1:-1]  
-    # 使用空格分割字符串，得到每个元素的字符串表示  
-    elements_str = cleaned_str.split()  
-    # 将每个元素的字符串表示转换为浮点数  
-    elements_float = [float(x) for x in elements_str]  
-    # 使用NumPy的array函数将列表转换为数组  
-    array_back = np.array(elements_float)  
-    #print(array_back)  
-    return array_back
 
-
-def pil_draw_pic(width,height,trajectory_x,trajectory_y,boom_size):
+def pil_draw_pic(width,height,trajectory_x,trajectory_y):
     #print ('--------------pil_draw_pic---------------')
     #print ('trajectory length:',len(trajectory_x))
     # 设定图像大小  
@@ -38,30 +27,6 @@ def pil_draw_pic(width,height,trajectory_x,trajectory_y,boom_size):
     # 创建一个可以在图像上绘制的对象  
     draw = ImageDraw.Draw(image)  
     
-    
-    
-      
-    # 转换轨迹坐标以适应图像大小  
-    #x_fix_size = 0.6
-    #y_fix_size = 0.6
-    
-    
-    boom_size = boom_size
-    traj_x_max = max(trajectory_x)
-    traj_x_min =min(trajectory_x)
-    x_middle = (traj_x_max-traj_x_min)/2.0+traj_x_min
-    traj_y_max =max(trajectory_y)
-    traj_y_min = min(trajectory_y)
-    y_middle = (traj_y_max-traj_y_min)/2.0+traj_y_min
-    x_traj_size = traj_x_max - traj_x_min
-    y_traj_size = traj_y_max - traj_y_min
-    
-    x_bak = (x_middle-traj_x_min)*boom_size + traj_x_min - x_middle
-    y_bak = (y_middle-traj_y_min)*boom_size + traj_y_min - y_middle
-    
-    
-    x_coords = [x *width for x in trajectory_x]  
-    y_coords = [y * height for y in trajectory_y]
     
     x_coords = trajectory_x
     y_coords = trajectory_y
@@ -92,11 +57,3 @@ def pil_draw_pic(width,height,trajectory_x,trajectory_y,boom_size):
     #print (image_np.shape)
     # 返回OpenCV图像  
     return image_np 
-
-
-
-class Trajectory:
-    def __init__(self):
-        
-        self.trajx = []
-        self.trajy = []

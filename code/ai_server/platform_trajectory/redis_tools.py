@@ -51,7 +51,7 @@ def get_image_from_redis(redis_connect,key):
         #majun 2024.9.11
         #image_array = base642numpyarray(base64_str,camera_dict['height'],camera_dict['width'])
         image_array = base642jpg2numpyarray(base64_str)
-        return image_array,camera_dict['box']
+        return image_array,camera_dict['box'],camera_dict['width'],camera_dict['height']
     else:
         return None
 
@@ -75,32 +75,28 @@ def array2jpg2base64(numpy_array,quality=90):
 
 
 
-def push_image_to_redis(redis_object,image_list_key,processed_image,result_box,activate_step):  
+def push_image_to_redis(redis_object,image_list_key,processed_image,trajx,trajy,traj_id,activate_step):  
     env = EnvConfig()
     r = redis_object
     height = processed_image.shape[0]
     width = processed_image.shape[1]
-    #处理成RGB颜色
-    processed_image = processed_image[:, :, ::-1] 
+    #处理成RGB颜色 
+    #轨迹已经是rgb
+    #processed_image = processed_image[:, :, ::-1]  
+    
     #majun 2024.9.11
     #base64_str = array2base64(processed_image)
     base64_str = array2jpg2base64(processed_image)
-    
-    '''
-    person_dict = {}
-    for person in result_dict.values():
-        if person['name']!=env.defeat_match_name:
-            person_dict[person['name']] = {}
-            person_dict[person['name']]['box'] = person['face_index']
-    '''
-            
+           
     push_dict = {"device":{'type_id':'101',
                            'device_id':'52',
                            'num_id':'0',
                            'width':str(width),
                            'height':str(height),
                            'data':base64_str,
-                           'box':str(result_box)},
+                           'trajx':str(trajx),
+                           'trajy':str(trajy),
+                           'traj_id':traj_id,},
                  'my_id':'101_52_0',
                  'time':get_now_YMDhmsms(),
                  }

@@ -8,6 +8,7 @@ import time
 from config import EnvConfig
 from thread_controller import ThreadControler
 from redis_tools import *
+import cv2
 #from utils import *
 
 
@@ -25,6 +26,15 @@ if __name__ == "__main__":
     print ('score control server online!')
     time.sleep(0.3)
     env = EnvConfig()
+    
+    
+    ###dir
+    traj_pic_dir = os.path.join(env.score_space,'trajectory')
+    if not os.path.exists(traj_pic_dir):
+        os.mkdir(traj_pic_dir)
+    
+    ###
+    
     
     tc = ThreadControler()
     tc.init_thread()
@@ -83,7 +93,14 @@ if __name__ == "__main__":
                 from utils import jungement
                 push_redis_project_scores(r,env.project_scores_key,jungement(len(proj_cfg['mission'])))
                 
+                img,traj_id = get_traj_result(r,env.platform_traj_result_key)
+                print (traj_id)
+                cv2.imwrite(os.path.join(traj_pic_dir,traj_id+'.jpg'),img)
+                
+                
                 print ('class over , goodbye !')
+                
+                r.set(env.server_activate_flag,'0')
                 time.sleep(1)
                 break
             

@@ -1,6 +1,8 @@
 import redis
-
-
+import base64
+from PIL import Image
+from io import BytesIO
+import numpy as np
 import json
 import time
 import datetime
@@ -39,6 +41,67 @@ def get_now_YMDhmsms():
     formatted_time = dt_object.strftime("%Y%m%d%H%M%S") + str(milliseconds).zfill(3)  
     #print(formatted_time)  # 输出形如：2023-07-19 15:30:45.123
     return formatted_time
+
+
+def base642numpyarray(base64_str,height,width):
+    # Decode Base64 string to image data
+    image_data = base64.b64decode(base64_str)
+    # Convert image data to NumPy array
+    image_array = np.frombuffer(image_data, dtype=np.uint8)
+    # 将一维数组转换为正确的形状 (720, 1280, 3)
+    image_array_reshaped = image_array.reshape((int(height), int(width), 3)) 
+    return image_array_reshaped
+
+def base642jpg2numpyarray(base64_str):
+    # 将Base64字符串解码为二进制数据 
+    jpg_data = base64.b64decode(base64_str) 
+    # 使用BytesIO将二进制数据转换为Pillow图像  
+    image = Image.open(BytesIO(jpg_data)) 
+    np_image = np.array(image)  
+    # OpenCV使用BGR，所以如果需要，这里将RGB转换为BGR  
+    np_image = np_image[:, :, ::-1]  
+    return np_image
+
+
+def get_traj_result(redis_connect,key):
+    camera_json_str = redis_connect.lindex(key, -1)
+    json_dict = json.loads(camera_json_str)
+    camera_dict = json_dict['device']
+    base64_str = camera_dict['data']
+    if base64_str is not None:
+        #majun 2024.9.11
+        #image_array = base642numpyarray(base64_str,camera_dict['height'],camera_dict['width'])
+        image_array = base642jpg2numpyarray(base64_str)
+        return image_array,camera_dict['traj_id']
+    else:
+        return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def set_chatbot_ask(redis_object,redis_key,ask):
