@@ -11,6 +11,10 @@ from redis_tools import *
 import cv2
 #from utils import *
 
+from utils import str_array2np_array_float,get_straight_trajectory_LIP
+
+
+from tools.traj_score_train.model.eval_one import ScoreEval
 
 
 
@@ -55,6 +59,8 @@ if __name__ == "__main__":
                 time.sleep(1)
                 break
             
+            traj_score_tool = ScoreEval()
+            
             while True:
                 activate_step+=1 
                 
@@ -90,12 +96,33 @@ if __name__ == "__main__":
                 
                 
                 #push_redis_project_scores(r,env.project_scores_key,{'project1':{'scores':[5,3,4],'comment':['best','good','bad']}})
-                from utils import jungement
-                push_redis_project_scores(r,env.project_scores_key,jungement(len(proj_cfg['mission'])))
+                #from utils import jungement
+                #push_redis_project_scores(r,env.project_scores_key,jungement(len(proj_cfg['mission'])))
                 
-                img,traj_id = get_traj_result(r,env.platform_traj_result_key)
+                img,traj_id,x_str,y_str = get_traj_result(r,env.platform_traj_result_key)
                 print (traj_id)
+                if x_str!='[]':
+                    x_list = str_array2np_array_float(x_str)
+                    y_list = str_array2np_array_float(y_str)
+                    traj_points = []
+                    for i in range(len(x_list)):
+                        traj_points.append([x_list[i],y_list[i]])
+                    straight_score = get_straight_trajectory_LIP(traj_points)
+                else:
+                    straight_score = 0
+                
+                scores,item = traj_score_tool.get_score_from_image(img)
+
+                print ('straight score:%f'%straight_score)
+                print("Predicted shape:", item)
+                print("result scores:",scores)
                 cv2.imwrite(os.path.join(traj_pic_dir,traj_id+'.jpg'),img)
+
+                result_dict = {}
+                result_dict['straight'] = ['直线相似度：%s'%str(straight_score)]
+                result_dict['scores'] = [round(i, 4) for i in scores]
+                result_dict['comments'] = ['利用PLC指令实现了给定的%s轨迹，做的很好请继续保持！'%item]
+                push_redis_project_scores(r,env.project_scores_key,result_dict)
                 
                 
                 print ('class over , goodbye !')

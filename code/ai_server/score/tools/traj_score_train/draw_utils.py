@@ -3,6 +3,17 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 
+def vertices2list(vertices):
+    x= []
+    y = []
+    for _ in vertices:
+        x.append(_[0])
+        y.append(_[1]) 
+    x.append(vertices[0][0])
+    y.append(vertices[0][1])
+    return x,y
+
+
 def pil_draw_pic(width,height,trajectory_x,trajectory_y):
     #print ('--------------pil_draw_pic---------------')
     #print ('trajectory length:',len(trajectory_x))

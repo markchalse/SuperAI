@@ -72,7 +72,7 @@ def get_traj_result(redis_connect,key):
         #majun 2024.9.11
         #image_array = base642numpyarray(base64_str,camera_dict['height'],camera_dict['width'])
         image_array = base642jpg2numpyarray(base64_str)
-        return image_array,camera_dict['traj_id']
+        return image_array,camera_dict['traj_id'],camera_dict['trajx'],camera_dict['trajy']
     else:
         return None
 
