@@ -12,9 +12,84 @@ import numpy as np
 
 
 
+def get_straight_goal(x_list_source,y_list_source,straight_score):
+    x_list = y_list_source
+    y_list = x_list_source
+    
+    straight_score = round(straight_score,4)
+    x_forward = { 'score':0,'comment':''}
+    x_back = { 'score':0,'comment':''}
+    y_forward = { 'score':0,'comment':''}
+    y_back = { 'score':0,'comment':''}
+    
+    if len(x_list)>0:
+        
+        
+        #x_list 颠倒
+        print ('x_0:',x_list[-1])
+        print ('x_-1:',x_list[0])
+        
+        if x_list[-1] - x_list[0] < 0 :
+            x_forward['score'] = 1
+            x_forward['comment'] = 'x轴正转正确，'
+            x_back['comment'] = 'x轴反转错误，'
+        else:
+            x_back['score'] = 1
+            x_forward['comment'] = 'x轴正转错误，'
+            x_back['comment'] = 'x轴反转正确，'
+            
+    if len(y_list)>0:
+        
+        #x_list 颠倒
+        print ('y_0:',y_list[-1])
+        print ('y_-1:',y_list[0])
+        
+        if y_list[-1] - y_list[0] < 0 :
+            y_forward['score'] = 1
+            y_forward['comment'] = 'y轴正转正确，'
+            y_back['comment'] = 'y轴反转错误，'
+        else:
+            y_back['score'] = 1
+            y_forward['comment'] = 'y轴正转错误，'
+            y_back['comment'] = 'y轴反转正确，'
+    
+    if straight_score>0.9:
+        straight_comment = '直线运行成功，太棒了！'
+    else:
+        straight_comment = '直线运行失败，需要改正！'
+    
+    
+    if x_forward['score'] == 1:        
+        x_forward['score'] = straight_score
+        x_forward['comment']+=straight_comment
+    else:
+        x_forward['comment']+='需要改正方向！'
+        
+    if x_back['score'] == 1:        
+        x_back['score'] = straight_score
+        x_back['comment']+=straight_comment
+    else:
+        x_back['comment']+='需要改正方向！'
+        
+    
+    if y_forward['score'] == 1:        
+        y_forward['score'] = straight_score
+        y_forward['comment']+=straight_comment
+    else:
+        y_forward['comment']+='需要改正方向！'
 
+    if y_back['score'] == 1:        
+        y_back['score'] = straight_score
+        y_back['comment']+=straight_comment
+    else:
+        y_back['comment']+='需要改正方向！'
 
-
+    x_forward['score'] = str(x_forward['score'])
+    y_forward['score'] = str(y_forward['score'])
+    x_back['score'] = str(x_back['score'])
+    y_back['score'] = str(y_back['score'])
+    
+    return x_forward,x_back,y_forward,y_back
 
 
 

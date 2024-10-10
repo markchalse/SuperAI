@@ -11,7 +11,7 @@ from redis_tools import *
 import cv2
 #from utils import *
 
-from utils import str_array2np_array_float,get_straight_trajectory_LIP
+from utils import str_array2np_array_float,get_straight_trajectory_LIP,get_straight_goal
 
 
 from tools.traj_score_train.model.eval_one import ScoreEval
@@ -109,6 +109,8 @@ if __name__ == "__main__":
                         traj_points.append([x_list[i],y_list[i]])
                     straight_score = get_straight_trajectory_LIP(traj_points)
                 else:
+                    x_list = []
+                    y_list = []
                     straight_score = 0
                 
                 scores,item = traj_score_tool.get_score_from_image(img)
@@ -118,7 +120,15 @@ if __name__ == "__main__":
                 print("result scores:",scores)
                 cv2.imwrite(os.path.join(traj_pic_dir,traj_id+'.jpg'),img)
 
+                x_f,x_b,y_f,y_b=get_straight_goal(x_list,y_list,straight_score)
+
                 result_dict = {}
+                
+                result_dict['x_forward'] = x_f
+                result_dict['x_back'] = x_b
+                result_dict['y_forward'] = y_f
+                result_dict['y_back'] = y_b
+                
                 result_dict['straight'] = ['直线相似度：%s'%str(straight_score)]
                 result_dict['scores'] = [round(i, 4) for i in scores]
                 result_dict['comments'] = ['利用PLC指令实现了给定的%s轨迹，做的很好请继续保持！'%item]
