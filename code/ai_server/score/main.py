@@ -11,7 +11,7 @@ from redis_tools import *
 import cv2
 #from utils import *
 
-from utils import str_array2np_array_float,get_straight_trajectory_LIP,get_straight_goal
+from utils import str_array2np_array_float,get_straight_trajectory_LIP,get_straight_goal,get_graphic_goal
 
 
 from tools.traj_score_train.model.eval_one import ScoreEval
@@ -129,9 +129,13 @@ if __name__ == "__main__":
                 result_dict['y_forward'] = y_f
                 result_dict['y_back'] = y_b
                 
+                square_goal,triangular_goal = get_graphic_goal(scores)
+                result_dict['square'] = square_goal
+                result_dict['triangular'] = triangular_goal
+                
                 result_dict['straight'] = ['直线相似度：%s'%str(straight_score)]
-                result_dict['scores'] = [round(i, 4) for i in scores]
-                result_dict['comments'] = ['利用PLC指令实现了给定的%s轨迹，做的很好请继续保持！'%item]
+                #result_dict['scores'] = [round(i, 4) for i in scores]
+                #result_dict['comments'] = ['利用PLC指令实现了给定的%s轨迹，做的很好请继续保持！'%item]
                 push_redis_project_scores(r,env.project_scores_key,result_dict)
                 
                 

@@ -8,7 +8,28 @@ import numpy as np
 
 
 
-
+def get_graphic_goal(scores):
+    scores = [round(i, 4) for i in scores]
+    square = { 'score':str(scores[0]),'comment':''}
+    triangular = { 'score':str(scores[1]),'comment':''}
+    
+    if scores[0]>0.8:
+        if scores[0]>0.95:
+            square['comment'] = '利用PLC指令实现了给定的矩形轨迹，做的很好，请继续保持！'
+        else:
+            square['comment'] = '利用PLC指令基本完成给定的矩形轨迹，请继续加油！'
+    else:
+        square['comment'] = '没有利用PLC指令实现给定的矩形轨迹，做的不好，请努力！'
+        
+    if scores[1]>0.8:
+        if scores[1]>0.95:
+            triangular['comment'] = '利用PLC指令实现了给定的三角形轨迹，做的很好，请继续保持！'
+        else:
+            triangular['comment'] = '利用PLC指令基本完成给定的三角形轨迹，请继续加油！'
+    else:
+        triangular['comment'] = '没有利用PLC指令实现给定的三角形轨迹，做的不好，请努力！'
+    
+    return square,triangular
 
 
 
