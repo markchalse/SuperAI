@@ -9,8 +9,8 @@ import time
 import datetime
 
 #BASE_PATH = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
-#BASE_PATH = r"G:\workspace\majun\code\SuperAI"
-BASE_PATH = r"F:\majun\code\SuperAI"
+BASE_PATH = r"G:\workspace\majun\code\SuperAI"
+#BASE_PATH = r"F:\majun\code\SuperAI"
 
 #-----------------------------------------------
 CAMERA_SENSOR_PATH =  os.path.join(BASE_PATH,r"code\data_sensor\camera_sensor\script")
@@ -1773,10 +1773,11 @@ class App(QWidget):
             redis_text = ""
             if path == 'score_cfg':
                 key = env.project_cfg_key 
-                redis_text = r.get(key).decode('utf-8')
+                #redis_text = r.get(key).decode('utf-8')
             else:
                 key = env.project_scores_key
-                redis_text = r.lindex(key, -1)
+            redis_text = r.get(key).decode('utf-8')
+                #redis_text = r.lindex(key, -1)
             if redis_text=="":
                 self.score_text_edit.setText("redis empty!")
             else:

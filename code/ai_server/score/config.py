@@ -2,7 +2,7 @@ import os
 
 class EnvConfig:
     def __init__(self):
-        self.platform = "LAPTOP"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
+        self.platform = "QT"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
         
         #login
         if self.platform == "LAPTOP":
@@ -19,12 +19,14 @@ class EnvConfig:
         self.server_activate_flag = 'ai_score_activate'
         
         
-        self.project_cfg_key = 'ai_project_cfg'
+        #self.project_cfg_key = 'ai_project_cfg'
+        self.project_cfg_key = '3'
         self.project_scores_key = 'ai_project_scores'
         
         
         
         self.platform_traj_result_key = 'ai_platform_trajectory_result'
+        self.trajectory_id_key = 'ai_platform_trajectory_id'
         
         
         #redis tools
