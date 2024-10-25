@@ -7,32 +7,10 @@ import redis
 import os
 import tempfile 
 from config import EnvConfig
+from utils import *
 
 
-def set_ai_super_online(redis_obj,r_key):
-    try:
-        redis_obj.set(r_key, '1')
-    except Exception as e:
-        print (e)
 
-def check_pid(pid):
-    #pid = 16000  
-    try:
-        # 使用psutil检查PID  
-        process = psutil.Process(pid)  
-        if process.is_running():  
-            print(f"PID {pid} is still running.")  
-            return True
-        else:
-            print(f"PID {pid} is not running.")  
-            return False
-    except Exception as e:
-        print(e) 
-        return False   
-        #if 'not found' in str(e):
-            #print ('haha')
-            #bat_path= r'F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI\code\data_sensor\camera_sensor\script\camera_redis_show.bat'
-            #os.system('start '+bat_path)
 
 def clear_redis(redis_obj,redis_key):
     pid_count = redis_obj.llen(redis_key)
@@ -48,13 +26,7 @@ def clear_redis(redis_obj,redis_key):
         except Exception as e:
             print (e)
 
-def analyze_redis_data(data):
-    try:
-        data_dict = json.loads(data)
-        return data_dict['server'],data_dict['pid'],data_dict['time']
-    except Exception as e:
-        print (e)
-        return '','',''
+
 
 if __name__== "__main__":
     env = EnvConfig()
@@ -77,15 +49,29 @@ if __name__== "__main__":
     #------------------------lock--------------------------------
     r = redis.Redis(host='localhost', port=6379, db=0)  
     
-    set_ai_super_online(r,env.ai_online_flag)
+    set_redis_key_up(r,env.ai_online_flag)
+    print ('Super AI on line')
     
+    clear_old_data(r,env.server_pid_key)
+    
+    #close all
+    print ('Begin init all server flag:')
+    for server_name in env.server_pool:
+        print (server_name)
+        set_redis_key_down(r,env.server_code_info[server_name]['online_flag'])
+        set_redis_key_down(r,env.server_code_info[server_name]['activate_flag'])
+        time.sleep(0.2)
+
     step = 0
     while True:
+        step+=1
+
         if r.get(env.ai_online_flag) == b'0':
             print('SuperAI daemon offline!')
             break
         
-        step+=1
+
+        
         exist_servers = []
         server_pid_infos = r.lrange(env.server_pid_key, 0, -1)
         for server_pid_info in server_pid_infos:
@@ -96,30 +82,48 @@ if __name__== "__main__":
         print (exist_servers)
         
         
-        for sys_serv_name in env.server_bat.keys():
+        for sys_serv_name in env.server_pool:
             if sys_serv_name not in exist_servers:
                 print ('start %s ...'%sys_serv_name)
-                os.system('start '+env.server_bat[sys_serv_name])
-                if step == 1:
-                    time.sleep(3)
-             
+                os.system('start '+env.server_code_info[sys_serv_name]['start'])
+                time.sleep(2)
+                print ('wait %s activate ...'%sys_serv_name)
+                
+                for _ in range(5):
+                    if not check_redis_key_up(r,env.server_code_info[sys_serv_name]['activate_flag']):
+                        print ('set activate ...')
+                        set_redis_key_up(r,env.server_code_info[sys_serv_name]['activate_flag'])
+                        time.sleep((_+1)*5)
+                    else:
+                        #break
+                        print ('stil activate , wait ...')
+                        #time.sleep((_+1)*3)
+                        time.sleep(3)
+                
+                #if step == 1:
+                #    time.sleep(3)
+            else:
+                print ('%s is still running'%sys_serv_name)
+            
         
-        if step%3 == 0:
-            clear_redis(r,env.server_pid_key)
-            print('clear redis over!')
+        
+        #if step%3 == 0:
+        #    clear_redis(r,env.server_pid_key)
+        #    print('clear redis over!')
         
         if step>10000000:
-            step = 2
+            step = 1
         
         if r.get(env.ai_online_flag) == b'0':
             print('SuperAI daemon offline!')
+            time.sleep(0.1)
             break
         
         
-        if step == 1:
-            time.sleep(60)
-        else:
-            time.sleep(20)
+        #if step == 1:
+        #    time.sleep(60)
+        #else:
+        time.sleep(20)
         
     # 使用 atexit 清理锁文件（可选）  
     import atexit  

@@ -77,7 +77,14 @@ def get_traj_result(redis_connect,key):
         return None
 
 
-
+def push_server_pid(redis_object,pid_redis_key,server_name,pid):
+    data = {'server':server_name,
+            'pid':str(pid),
+            'time':get_now_YMDhmsms()}
+    try:
+        redis_object.rpush(pid_redis_key, json.dumps(data))
+    except Exception as e:
+        print (e)
 
 
 

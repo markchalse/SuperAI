@@ -42,6 +42,11 @@ if __name__ == "__main__":
     
     tc = ThreadControler()
     tc.init_thread()
+    
+    pid = os.getpid()
+    print(f"当前进程的PID是: {pid}")   
+    push_server_pid(r,'ai_server_pid','score',str(pid))
+    
     print ('wait for activate...')
     
     
