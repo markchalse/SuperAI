@@ -42,7 +42,7 @@ def get_image_from_redis(redis_connect,key):
     camera_json_str = redis_connect.lindex(key, -1)
     json_dict = json.loads(camera_json_str)
     camera_dict = json_dict['device']
-    print ('%s : %s'%(json_dict['my_id'],json_dict['time']))
+    #print ('%s : %s'%(json_dict['my_id'],json_dict['time']))
     base64_str = camera_dict['data']
     if base64_str is not None:
         #majun 2024.9.11
@@ -124,7 +124,7 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,result_dict,
             try:
                 #r.lpop(image_list_key)  # 弹出一条
                 r.ltrim(image_list_key, -10, -1)  # 只保留列表中最新的10个元素
-                print ('clean face recognition redis memory ready!')
+                print ('%s : clean face recognition redis memory ready!'%get_now_YMDhmsms())
             except Exception as e:
                 print (e)
 

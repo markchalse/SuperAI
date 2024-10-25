@@ -43,6 +43,7 @@ if __name__ == "__main__":
     tc = ThreadControler()
     tc.init_thread()
     
+    
     pid = os.getpid()
     print(f"当前进程的PID是: {pid}")   
     push_server_pid(r,'ai_server_pid','score',str(pid))
@@ -79,6 +80,7 @@ if __name__ == "__main__":
                     break
                 
                 
+                
                 if now_step_id == last_step_id:
                     if activate_step%20 == 0:
                         if (not tc.check_on_line()) or (not tc.check_ai_online()):
@@ -90,16 +92,20 @@ if __name__ == "__main__":
                             print ('wait for activate...')
                             break
                     continue
+                else:
+                    print ('-------------------------------------')
+                    print('Now step id change : %s'%now_step_id)
                 
-                if last_step_id == 'ai_begin_step':
+                if last_step_id == 'ai_begin_step' or last_step_id == '0':
+                    print ('Init proj cfg first time! Last step id : %s'%last_step_id)
                     last_step_id = now_step_id
                     ai_score = proj_cfg
                     try:
                         r.set(env.trajectory_id_key,get_now_YMDhmsms()+'_'+now_step_id)
+                        push_redis_project_scores(r,env.project_scores_key,ai_score)
                     except Exception as e:
                         last_step_id = 'ai_begin_step'
                         print (e)
-                    
                     continue
                 
                 
@@ -123,7 +129,10 @@ if __name__ == "__main__":
                 print ('straight score:%f'%straight_score)
                 print("Predicted shape:", item)
                 print("result scores:",scores)
-                cv2.imwrite(os.path.join(traj_pic_dir,traj_id+'.jpg'),img)
+                
+                pic_file_path = os.path.join(traj_pic_dir,traj_id+'.jpg')
+                print ('Save trajectory pic at :%s'%pic_file_path)
+                cv2.imwrite(pic_file_path,img)
 
                 x_f,x_b,y_f,y_b=get_straight_goal(x_list,y_list,straight_score)
 
@@ -172,11 +181,12 @@ if __name__ == "__main__":
                 else:
                     result_score = triangular_goal
                 
-                for task_i in range(len(ai_score['taskList'])):
-                    if ai_score['taskList'][task_i]['stepList'][0]['stepId'] == last_step_id:
-                        ai_score['taskList'][task_i]['stepList'][0]['ai_score'] = str(float(result_score['score'])*100)
-                        ai_score['taskList'][task_i]['stepList'][0]['ai_comment'] = result_score['comment']
-                        ai_score['taskList'][task_i]['stepList'][0]['ai_state'] = '1'
+                if last_step_id != '0':
+                    for task_i in range(len(ai_score['taskList'])):
+                        if ai_score['taskList'][task_i]['stepList'][0]['stepId'] == last_step_id:
+                            ai_score['taskList'][task_i]['stepList'][0]['ai_score'] = str(float(result_score['score'])*100)
+                            ai_score['taskList'][task_i]['stepList'][0]['ai_comment'] = result_score['comment']
+                            ai_score['taskList'][task_i]['stepList'][0]['ai_state'] = '1'
                         
                 push_redis_project_scores(r,env.project_scores_key,ai_score)
                 

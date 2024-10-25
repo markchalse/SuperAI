@@ -113,7 +113,7 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,trajx,trajy,
             try:
                 #r.lpop(image_list_key)  # 弹出一条
                 r.ltrim(image_list_key, -env.MAX_LEN, -1)  # 只保留列表中最新的10个元素
-                print ('clean platform recognition redis memory ready!')
+                print ('%s : clean platform trajectory redis memory ready!'%get_now_YMDhmsms())
             except Exception as e:
                 print (e)
 

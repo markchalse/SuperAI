@@ -12,19 +12,7 @@ from utils import *
 
 
 
-def clear_redis(redis_obj,redis_key):
-    pid_count = redis_obj.llen(redis_key)
-    if pid_count>5:
-        try:
-            for i in range(pid_count-5):
-               redis_str=redis_obj.lindex(redis_key, 0)
-               serv_name,serv_pid,serv_time = analyze_redis_data(redis_str)
-               if check_pid(int(serv_pid)):
-                   break
-               else:
-                   redis_obj.lpop(redis_key)
-        except Exception as e:
-            print (e)
+
 
 
 
@@ -52,7 +40,13 @@ if __name__== "__main__":
     set_redis_key_up(r,env.ai_online_flag)
     print ('Super AI on line')
     
-    clear_old_data(r,env.server_pid_key)
+    if not clear_old_data(r,env.server_pid_key):
+        print ('clear old thread data fail!')
+        exit(0)
+    
+    if not kill_exist_thread(r,env.server_pid_key):
+        print ('kill exist thread fail!')
+        exit(0)
     
     #close all
     print ('Begin init all server flag:')
@@ -107,9 +101,9 @@ if __name__== "__main__":
             
         
         
-        #if step%3 == 0:
-        #    clear_redis(r,env.server_pid_key)
-        #    print('clear redis over!')
+        if step%3 == 0:
+            clear_redis(r,env.server_pid_key)
+            print('clear PID redis over!')
         
         if step>10000000:
             step = 1

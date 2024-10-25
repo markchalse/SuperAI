@@ -57,7 +57,7 @@ if __name__ == "__main__":
                     continue
                 if box!='[]':
                     box_array = str_array2np_array_float(box)
-                    print (box_array)
+                    #print (box_array)
                     traj_pool.trajx.append((box_array[0]+box_array[2])/2.0)
                     traj_pool.trajy.append((box_array[1]+box_array[3])/2.0)
                 

@@ -49,7 +49,7 @@ class CameraSensor:
         
 
 if __name__ == '__main__':
-    print ('camera sensor server online!')
+    print ('top camera sensor server online!')
     r = redis.Redis(host='localhost', port=6379, db=0)
     
     
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         if not tc.check_activate():
             time.sleep(3)
         else:
-            print ('camera sensor activate')
+            print ('top camera sensor activate')
             camera  = CameraSensor(camera_num=1)
             if camera.init_camera():
                 print ('camera ready')
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                 activate_step+=1
                 flag = camera.capture(activate_step)
                 if not flag:
-                    print ('camera something wrong!')
+                    print ('top camera something wrong!')
                     time.sleep(2)
                     break
             
@@ -101,7 +101,7 @@ if __name__ == '__main__':
                     activate_step = 0
         
         if (not tc.check_on_line()) or (not tc.check_ai_online()):
-            print ('camera sensor server offline!')
+            print ('top camera sensor server offline!')
             time.sleep(1)
             break
         

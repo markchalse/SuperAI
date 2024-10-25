@@ -3,6 +3,7 @@ import json
 import time
 import datetime
 import psutil
+import os
 
 def analyze_redis_data(data):
     try:
@@ -12,19 +13,41 @@ def analyze_redis_data(data):
         print (e)
         return '','',''
     
-def check_pid(pid):
+def check_pid(pid_int):
     #pid = 16000  
     try:
         # 使用psutil检查PID  
-        process = psutil.Process(pid)  
+        process = psutil.Process(pid_int)  
         if process.is_running():  
-            print(f"PID {pid} is still running.")  
+            print(f"PID {pid_int} is still running.")  
             return True
         else:
-            print(f"PID {pid} is not running.")  
+            print(f"PID {pid_int} is not running.")  
             return False
     except Exception as e:
         print(e) 
+        return False
+
+def clear_redis(redis_obj,redis_key):
+    pid_count = redis_obj.llen(redis_key)
+    if pid_count>10:
+        try:
+            for i in range(pid_count-10):
+               redis_str=redis_obj.lindex(redis_key, 0)
+               serv_name,serv_pid,serv_time = analyze_redis_data(redis_str)
+               if check_pid(int(serv_pid)):
+                   break
+               else:
+                   redis_obj.lpop(redis_key)
+        except Exception as e:
+            print (e)
+    
+def kill_pid(pid_str):
+    try:
+        os.system('taskkill /f /pid %s' % pid_str)
+        return True
+    except Exception as e:
+        print (e)
         return False
     
 def get_now_YMDhmsms():
@@ -82,8 +105,24 @@ def clear_old_data(redis_obj,server_pid_key):
                 redis_obj.lpop(server_pid_key)
             except Exception as e:
                 print(e)
-                break
+                return False
+                #break
         else:
             break
-        
-        
+    return True  
+
+def kill_exist_thread(redis_obj,server_pid_key):
+    print('kill exist thread!')
+    server_pid_infos = redis_obj.lrange(server_pid_key, 0, -1)
+    for server_pid_info in server_pid_infos:
+        serv_name,serv_pid,serv_time = analyze_redis_data(server_pid_info)
+        if check_pid(int(serv_pid)):
+            for _ in range(5):
+                print ('kill server : %s'%serv_name)
+                flag = kill_pid(serv_pid)
+                time.sleep((_+1)*2)
+                if flag:
+                    break
+            if not flag:
+                return False
+    return True

@@ -12,6 +12,7 @@ from config import EnvConfig
 #from utils import sound_file_names
 
 
+'''
 def get_redis_project_cfg(redis_object,redis_key):
     try:
         # 假设redis_key是'project_cfg'，返回的是json格式的字符串  
@@ -23,12 +24,27 @@ def get_redis_project_cfg(redis_object,redis_key):
     except Exception as e:
         print (e)
         return {}
+'''
+def get_redis_project_cfg(redis_object,redis_key):
+    try:   
+        project_info = redis_object.get(redis_key).decode('utf-8')
+        project_cfg = json.loads(project_info)
+        #print (project_cfg)
+        now_step_id = project_cfg['task_info']['now_step_id']
+        #print (now_step_id)
+        return True,project_cfg,now_step_id
+    
+    except Exception as e:
+        print (e)
+        return False,{},''
+
 
 def push_redis_project_scores(redis_object,redis_key,score_result:dict):
     
     #推送到Redis  
     try:
-        redis_object.rpush(redis_key, json.dumps(score_result))
+        #redis_object.rpush(redis_key, json.dumps(score_result))
+        redis_object.set(redis_key, json.dumps(score_result))
     except Exception as e:
         print (e)
 
@@ -76,7 +92,6 @@ def get_traj_result(redis_connect,key):
     else:
         return None
 
-
 def push_server_pid(redis_object,pid_redis_key,server_name,pid):
     data = {'server':server_name,
             'pid':str(pid),
@@ -85,6 +100,7 @@ def push_server_pid(redis_object,pid_redis_key,server_name,pid):
         redis_object.rpush(pid_redis_key, json.dumps(data))
     except Exception as e:
         print (e)
+
 
 
 

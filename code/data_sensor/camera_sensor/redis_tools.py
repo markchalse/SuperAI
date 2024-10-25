@@ -94,7 +94,7 @@ def push_image_to_redis(redis_object,processed_image,activate_step):
             try:
                 #r.lpop(image_list_key)  # 弹出一条
                 r.ltrim(image_list_key, -10, -1)  # 只保留列表中最新的10个元素
-                print ('clean singal camera redis memory ready!')
+                print ('%s clean singal camera redis memory ready!'%get_now_YMDhmsms())
             except Exception as e:
                 print (e)
       

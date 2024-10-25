@@ -56,7 +56,7 @@ if __name__ == "__main__":
                 
                 box = track_tool.get_tracker_results(image)
                 if len(box) > 0:
-                    print(box)
+                    #print(box)
                     cv2.rectangle(image,(int(box[0]),int(box[1])),(int(box[2]),int(box[3])),(255,0,0),25)
                 push_image_to_redis(r,env.smpdr_result_key,image,box,activate_step)
                 #cv2.imshow('smdpr Image', image)        

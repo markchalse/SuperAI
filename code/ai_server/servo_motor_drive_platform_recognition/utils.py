@@ -16,7 +16,7 @@ class StartTrack:
     #    return results
     
     def get_tracker_results(self,source):
-        yolo_res = self.yolo.predict(source,stream=False,device=self.device)    
+        yolo_res = self.yolo.predict(source,stream=False,device=self.device,verbose=False) #verbose=False 关闭yolo回显    
         all_res = yolo_res[0].boxes.data.cpu().numpy()
         if len(all_res)==0:
             return []
