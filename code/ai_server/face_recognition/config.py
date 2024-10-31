@@ -7,10 +7,9 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            #self.login_students_path = r"F:\workspace\majun\img\student"
-            self.login_students_path = r"F:\majun\img\student"
+            self.login_students_path = r"D:\ai_space\img\student"
         elif self.platform == "QT":
-            self.login_students_path = r"G:\workspace\majun\img\student"
+            self.login_students_path = r"D:\ai_space\img\student"
             
         
         

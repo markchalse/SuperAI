@@ -9,11 +9,9 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            #self.chatbot_workspace = r"F:\workspace\majun\img\chatbot"
-            self.chatbot_workspace = r"F:\majun\tmp\chatbot"
-            
+            self.chatbot_workspace = r"D:\ai_space\temp\chatbot"
         elif self.platform == "QT":
-            self.chatbot_workspace = r"G:\workspace\majun\temp\chatbot"
+            self.chatbot_workspace = r"D:\ai_space\temp\chatbot"
         
         self.chatbot_log_path = os.path.join(self.chatbot_workspace,'CHATBOT.LOG')
         

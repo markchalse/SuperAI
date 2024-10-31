@@ -6,10 +6,10 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.score_space = r"F:\majun\tmp\score"
+            self.score_space = r"D:\ai_space\temp\score"
             
         elif self.platform == "QT":
-            self.score_space = r"G:\workspace\majun\temp\score"
+            self.score_space = r"D:\ai_space\temp\score"
         
         
         

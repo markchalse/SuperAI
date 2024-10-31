@@ -5,25 +5,19 @@ class EnvConfig:
         
         if self.platform == "LAPTOP":
             # body detector
-            #self.detector_model_path = r"F:\workspace\majun\zhiyuanchuang_space\model_endpoints\body\detr_face_body.pt"
-            self.detector_model_path = r"F:\majun\model_endpoints\body\detr_face_body.pt"
-            
+            self.detector_model_path = r"D:\ai_space\model_endpoints\person_reid\detr_face_body.pt"
             # body feature
-            #self.reid_model_path = r"F:\workspace\majun\zhiyuanchuang_space\model_endpoints\body\net_last.pth"
-            self.reid_model_path = r"F:\majun\model_endpoints\body\net_last.pth"
-            
+            self.reid_model_path = r"D:\ai_space\model_endpoints\person_reid\net_last.pth"
             # body feature path
-            #self.body_features_path = r"F:\workspace\majun\img\body_features"
-            self.body_features_path = r"F:\majun\tmp\body_features"
+            self.body_features_path = r"D:\ai_space\temp\person_reid\body_features"
             
         elif self.platform == "QT":
             # body detector
-            self.detector_model_path = r"G:\workspace\majun\models\model_endpoints\model_endpoints\body\detr_face_body.pt"
+            self.detector_model_path = r"D:\ai_space\model_endpoints\person_reid\detr_face_body.pt"
             # body feature
-            self.reid_model_path = r"G:\workspace\majun\models\model_endpoints\model_endpoints\body\ft_ResNet50\net_last.pth"
-            
+            self.reid_model_path = r"D:\ai_space\model_endpoints\person_reid\net_last.pth"
             # body feature path
-            self.body_features_path = r"G:\workspace\majun\temp\body_features"        
+            self.body_features_path = r"D:\ai_space\temp\person_reid\body_features"      
             
         
         

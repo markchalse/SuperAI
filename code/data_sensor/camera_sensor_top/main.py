@@ -68,7 +68,7 @@ if __name__ == '__main__':
             time.sleep(3)
         else:
             print ('top camera sensor activate')
-            camera  = CameraSensor(camera_num=1)
+            camera  = CameraSensor(camera_num=0) #majun 20241031
             if camera.init_camera():
                 print ('camera ready')
             else:
@@ -105,45 +105,3 @@ if __name__ == '__main__':
             time.sleep(1)
             break
         
-
-'''
-    #camera.redis_connect.set('camera_down','0')
-    
-    #print(camera.init_camera())
-
-    ###################### capture ##############
-    
-    while True:
-        push_count,flag = camera.capture(push_count)
-        print ('statue: ',flag)
-        
-        if not flag:
-            break
-        
-        
-        # 逐帧读取摄像头捕捉的画面  
-        ret, frame = cap.read()
-        
-        # 检查是否成功读取画面  
-        if not ret:  
-            print("无法接收帧（画面）。退出...")  
-            break
-        
-        # 显示画面  
-        #cv2.imshow('frame', frame) 
-        push_count = push_image_to_redis(redis_connect,frame,push_count)
-        
-        
-        # 如果按下 'q' 键，则退出循环  
-        if cv2.waitKey(1) & 0xFF == ord('q'):  
-            break
-        
-        
-        if push_count%30 == 0:
-            if camera.redis_connect.get('camera_down')==b'1':
-                break
-        
-    # 释放摄像头并关闭所有OpenCV窗口  
-    camera.cap.release()  
-    #cv2.destroyAllWindows() 
-'''

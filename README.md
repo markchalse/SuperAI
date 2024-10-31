@@ -1,19 +1,20 @@
-Hello I am Super AI.
+# Hello I am Super AI.
 
-quick clone
 
-git clone https://mirror.ghproxy.com/https://github.com/markchalse/SuperAI.git
-
+git clone https://gitlab-iot.metaobe.com:3443/ai/superai.git
+<!-- quick clone -->
+<!-- git clone https://mirror.ghproxy.com/https://github.com/markchalse/SuperAI.git -->
 
 # 脚本路径说明
 `/script`
 
 一些涉及整个系统的，QT需要启动的脚本
 
-## 启动脚本
-`/script/start.bat`
+## 守护进程启动脚本
+`ai_daemon/script/ai_start.bat`
 
 QT启动时执行的脚本，这个文件中，会拉起全部的AI进程
+
 
 # 代码路径说明
 
