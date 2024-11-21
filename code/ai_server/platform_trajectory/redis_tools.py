@@ -90,14 +90,14 @@ def push_image_to_redis(redis_object,image_list_key,processed_image,trajx,trajy,
            
     push_dict = {"device":{'type_id':'101',
                            'device_id':'52',
-                           'num_id':'0',
+                           'num_id':'1',
                            'width':str(width),
                            'height':str(height),
                            'data':base64_str,
                            'trajx':str(trajx),
                            'trajy':str(trajy),
                            'traj_id':traj_id,},
-                 'my_id':'101_52_0',
+                 'my_id':'101_52_1',
                  'time':get_now_YMDhmsms(),
                  }
     

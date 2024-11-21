@@ -30,7 +30,7 @@ def base642jpg2numpyarray(base64_str):
     image = Image.open(BytesIO(jpg_data)) 
     np_image = np.array(image)  
     # OpenCV使用BGR，所以如果需要，这里将RGB转换为BGR  
-    #np_image = np_image[:, :, ::-1]  
+    np_image = np_image[:, :, ::-1]  
     return np_image
 
 
@@ -60,7 +60,7 @@ r.set('ai_singal_camera_redis_show_down','0')
 
 # 主循环，持续从Redis读取并显示图像，直到用户按下'q'键  
 #image_key = 'camera_images'  
-image_key = '101_1_0'  
+image_key = '101_3_0'  
 while True:  
     image = get_image_from_redis(image_key)  
     if image is None:  

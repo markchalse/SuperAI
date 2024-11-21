@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     pid = os.getpid()
     print(f"当前进程的PID是: {pid}")   
-    push_server_pid(r,'ai_server_pid','smdpj',str(pid))
+    push_server_pid(r,'ai_server_pid','platform_traj',str(pid)) #20241107
     
     print ('wait for activate...')
     

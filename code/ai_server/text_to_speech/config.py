@@ -12,7 +12,7 @@ class EnvConfig:
             self.tts_workspace = r"D:\ai_space\temp\tts_files"
         
         #utils
-        self.tts_model = 'edge' #pytts
+        self.tts_model = 'pytts' #'edge' #pytts
         
         #thread controler
         self.ai_online_flag = 'ai_super_online'

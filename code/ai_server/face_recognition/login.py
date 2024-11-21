@@ -54,7 +54,8 @@ class LogIn():
                 self.people_dict[this_face_id]['face_index'] = face_boxes[_]
                 self.people_dict[this_face_id]['face_img'] = face_imgs[_]
                 #self.people_dict[this_face_id]['feature'] = self.face_m.get_img_feature(face_imgs[_])
-                self.people_dict[this_face_id]['feature'] = self.face_m.get_img_vggface_feature(face_imgs[_])
+                #self.people_dict[this_face_id]['feature'] = self.face_m.get_img_vggface_feature(face_imgs[_])
+                self.people_dict[this_face_id]['feature'] = self.face_m.get_img_facenet_feature(face_imgs[_])
     
     #def process(self,frame: np.ndarray):
     def process(self,capture_img):

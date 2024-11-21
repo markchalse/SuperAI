@@ -1,17 +1,8 @@
 import os
 
 class EnvConfig:
-    def __init__(self):
-        self.platform = "LAPTOP"#"QT"#"LAPTOP"#"QT"#"LAPTOP" # "QT"
-
-        #main 
-        self.chat_model_name = "BAIDU"#"GLM" #"BAIDU"#"GLM"#"BAIDU"#"GLM"  #"BAIDU"
-        
-        #login
-        if self.platform == "LAPTOP":
-            self.chatbot_workspace = r"D:\ai_space\temp\chatbot"
-        elif self.platform == "QT":
-            self.chatbot_workspace = r"D:\ai_space\temp\chatbot"
+    def __init__(self):        
+        self.chatbot_workspace = r"D:\ai_space\temp\chatbot"
         
         self.chatbot_log_path = os.path.join(self.chatbot_workspace,'CHATBOT.LOG')
         

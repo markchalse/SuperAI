@@ -1,13 +1,18 @@
 from config import EnvConfig
-import dlib
+#import dlib
 import cv2
 import random
+from ultralytics import YOLO
 
 class CutFace():
     def __init__(self):
         self.env = EnvConfig()
         #face detector
-        self.detector = dlib.get_frontal_face_detector()
+        #if self.env.cut_face_model_name == 'yolo_face':
+        self.detector = YOLO(self.env.yolo_face_model_path)
+        #else:
+        #    self.detector = dlib.get_frontal_face_detector() #2024.11.15 dlib offline
+        
         
     def detector_face(self,pic_img):
         faces = []
@@ -20,42 +25,80 @@ class CutFace():
     def cut_faces_from_img(self,pic_img): #BGR img
         face_boxes = []
         face_imgs = []
-        # 检测人脸
-        faces = self.detector_face(pic_img)
         
-        for face in faces:
-            # 提取人脸区域
-            #x, y, w, h = face.left(), face.top(), face.width(), face.height()
-            x, y, w, h = face
-            # Ensure that the region does not exceed the bounds of pic_img
-            x = max(0, x)
-            y = max(0, y)
-            w = min(w, pic_img.shape[1] - x)
-            h = min(h, pic_img.shape[0] - y)
         
-            face_imgs.append(pic_img[y:y+h, x:x+w])
-            face_boxes.append([x,y,w,h])
+        #if self.env.cut_face_model_name == 'yolo_face':  ##2024.11.15 dlib offline 
+        yolo_res = self.detector.predict(pic_img,stream=False,device='cuda:0',verbose=False) #verbose=False 关闭yolo回显    
+        all_res = yolo_res[0].boxes.data.cpu().numpy()
+    
+        for face in all_res:
+            if face[4] > 0.7 :
+                x = int(max(0,face[0]))
+                y = int(max(0,face[1]))
+                w = int(min(pic_img.shape[1] - x, face[2]-face[0]))
+                h = int(min(pic_img.shape[0] - y,face[3]-face[1]))
+                face_imgs.append(pic_img[y:y+h, x:x+w])
+                face_boxes.append([x,y,w,h])
+        ##2024.11.15 dlib offline
+        '''
+        else:
+        
+            # 检测人脸
+            faces = self.detector_face(pic_img)
+            
+            for face in faces:
+                # 提取人脸区域
+                #x, y, w, h = face.left(), face.top(), face.width(), face.height()
+                x, y, w, h = face
+                # Ensure that the region does not exceed the bounds of pic_img
+                x = max(0, x)
+                y = max(0, y)
+                w = min(w, pic_img.shape[1] - x)
+                h = min(h, pic_img.shape[0] - y)
+            
+                face_imgs.append(pic_img[y:y+h, x:x+w])
+                face_boxes.append([x,y,w,h])
+        '''
         
         return face_boxes,face_imgs
 
     def get_face_boxes(self,pic_img): #BGR img
         face_indexs = []
         #face_imgs = []
-        # 检测人脸
-        faces = self.detector_face(pic_img)
-
-        for face in faces:
-            # 提取人脸区域
-            #x, y, w, h = face.left(), face.top(), face.width(), face.height()
-            x, y, w, h = face
-            # Ensure that the region does not exceed the bounds of pic_img
-            x = max(0, x)
-            y = max(0, y)
-            w = min(w, pic_img.shape[1] - x)
-            h = min(h, pic_img.shape[0] - y)
         
-            #face_imgs.append(pic_img[y:y+h, x:x+w])
-            face_indexs.append([x,y,w,h])
+        #if self.env.cut_face_model_name == 'yolo_face': ##2024.11.15 dlib offline 
+        yolo_res = self.detector.predict(pic_img,stream=False,device='cuda:0',verbose=False) #verbose=False 关闭yolo回显    
+        all_res = yolo_res[0].boxes.data.cpu().numpy()
+
+    
+        for face in all_res:
+            if face[4] > 0.7 :
+                x = int(max(0,face[0]))
+                y = int(max(0,face[1]))
+                w = int(min(pic_img.shape[1] - x, face[2]-face[0]))
+                h = int(min(pic_img.shape[0] - y,face[3]-face[1]))
+                #face_imgs.append(pic_img[y:y+h, x:x+w])
+                face_indexs.append([x,y,w,h])
+        
+        ##2024.11.15 dlib offline            
+        '''
+        else:
+            # 检测人脸
+            faces = self.detector_face(pic_img)
+
+            for face in faces:
+                # 提取人脸区域
+                #x, y, w, h = face.left(), face.top(), face.width(), face.height()
+                x, y, w, h = face
+                # Ensure that the region does not exceed the bounds of pic_img
+                x = max(0, x)
+                y = max(0, y)
+                w = min(w, pic_img.shape[1] - x)
+                h = min(h, pic_img.shape[0] - y)
+            
+                #face_imgs.append(pic_img[y:y+h, x:x+w])
+                face_indexs.append([x,y,w,h])
+        '''
         
         return face_indexs#,face_imgs
 

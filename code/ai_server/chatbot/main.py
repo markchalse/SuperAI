@@ -11,7 +11,30 @@ from redis_tools import *
 from utils import *
 
 
-
+class ChatModel:
+    def __init__(self):
+        self.glm_model = GLM()
+        self.baidu_model = BaiduAI()
+        self.model_name = "glm"
+        
+    def get_response(self,ask_text):
+        if self.model_name == "glm":
+            try:
+                text = self.glm_model.get_response(ask_text)
+            except Exception as e:
+                print (e)
+                self.model_name = "baidu"
+                return False,""
+        else:
+            try:
+                text = self.baidu_model.get_response(ask_text)
+            except Exception as e:
+                print (e)
+                self.model_name = "glm"
+                return False,""
+        return True,text
+        
+        
 
 
 if __name__ == "__main__":
@@ -23,10 +46,10 @@ if __name__ == "__main__":
     print ('chat bot server online!')
     time.sleep(0.3)
     env = EnvConfig()
-    if env.chat_model_name == "GLM":
-        chat_ai = GLM()
-    else:
-        chat_ai = BaiduAI()
+    
+    
+    chat_ai = ChatModel()
+    
     tc = ThreadControler()
     tc.init_thread()
     
@@ -65,12 +88,11 @@ if __name__ == "__main__":
                     if Flag:
                         continue
                     else:
-                        print ('deal %s : %s'%(ask_dict['seq'],ask_dict['ask']))
-                        try:
-                            text = chat_ai.get_response(ask_dict['ask'])
-                            #print (text)
-                        except Exception as e:
-                            print (e)
+                        print ('model(%s) deal %s : %s'%(chat_ai.model_name,ask_dict['seq'],ask_dict['ask']))
+                        result_flag,text = chat_ai.get_response(ask_dict['ask'])
+                        if not result_flag:
+                            print ('get response failed!')
+                            continue
                         push_chatbot_answer(r,env.redis_answer_flag,ask_dict['seq'],text,ask_dict['ask'])
                         chatbot_log[ask_dict['seq']] = (ask_dict['ask'],text)
                         add_chatbot_log(ask_dict['seq'],ask_dict['ask'],text)

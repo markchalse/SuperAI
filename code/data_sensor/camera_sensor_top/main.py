@@ -5,6 +5,7 @@ import redis
 import os
 from redis_tools import push_image_to_redis,push_server_pid
 from thread_controller import ThreadControler
+from config import EnvConfig
 
 class CameraSensor:
     def __init__(self,camera_num=0,width=1280,height=720):
@@ -49,6 +50,8 @@ class CameraSensor:
         
 
 if __name__ == '__main__':
+    env = EnvConfig()
+    
     print ('top camera sensor server online!')
     r = redis.Redis(host='localhost', port=6379, db=0)
     
@@ -68,7 +71,7 @@ if __name__ == '__main__':
             time.sleep(3)
         else:
             print ('top camera sensor activate')
-            camera  = CameraSensor(camera_num=0) #majun 20241031
+            camera  = CameraSensor(camera_num=env.camera_id)
             if camera.init_camera():
                 print ('camera ready')
             else:

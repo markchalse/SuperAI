@@ -230,3 +230,20 @@ def str_array2np_array_float(str_array):
     array_back = np.array(elements_float)  
     #print(array_back)  
     return array_back
+
+def closest_multiple_of_five(num):
+    # 确保输入在0到100之间
+    if not (0 <= num <= 100):
+        raise ValueError("输入必须在0到100之间")
+    
+    # 找到小于或等于num的最大的5的倍数
+    lower_multiple = num // 5 * 5
+    
+    # 找到大于或等于num的最小的5的倍数
+    upper_multiple = (num // 5 + 1) * 5
+    
+    # 返回离num最近的5的倍数
+    if num - lower_multiple <= upper_multiple - num:
+        return int(lower_multiple)
+    else:
+        return int(upper_multiple)

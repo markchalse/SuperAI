@@ -54,7 +54,8 @@ if __name__ == "__main__":
                         continue
                     else:
                         print ('deal %s : %s'%(text_dict['seq'],text_dict['text']))
-                        sound_file_name = os.path.join(env.tts_workspace,text_dict['seq']+'.mp3')
+                        #sound_file_name = os.path.join(env.tts_workspace,text_dict['seq']+'.mp3')
+                        sound_file_name = os.path.join(env.tts_workspace,text_dict['seq']+'.wav')
                         tts_engine.text2voice_file(text_dict['text'],sound_file_name)
                         push_tts_result(r,env.redis_sound_flag,text_dict['seq'],text_dict['text'],sound_file_name)
             

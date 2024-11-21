@@ -6,10 +6,10 @@ class EnvConfig:
         
         #login
         if self.platform == "LAPTOP":
-            self.codebase_path = r"F:\workspace\majun\zhiyuanchuang_space\ai_code\superai\SuperAI"
+            self.codebase_path = r"D:\ai_space\code\superai"
             
         elif self.platform == "QT":
-            self.codebase_path = r"G:\workspace\majun\code\SuperAI"
+            self.codebase_path = r"D:\ai_space\code\superai"
         
         self.server_pid_key = 'ai_server_pid'
         self.ai_online_flag = 'ai_super_online'
@@ -83,6 +83,7 @@ class EnvConfig:
         #self.server_bat['feature_collect']=os.path.join(self.codebase_path,r'code\ai_server\person_reid\script\feature_collect_start.bat')
         #self.server_bat['person_reid']=os.path.join(self.codebase_path,r'code\ai_server\person_reid\script\person_reid_start.bat')
         '''
-        self.server_pool = ['asr','tts','chatbot','camera_sensor','face_recognition','camera_top','platform_traj','smdpr','score']
+        #self.server_pool = ['asr','tts','chatbot','camera_sensor','face_recognition','camera_top','platform_traj','smdpr','score']
+        self.server_pool = ['asr','tts','chatbot','face_recognition','camera_top','platform_traj','smdpr','score']
         
         

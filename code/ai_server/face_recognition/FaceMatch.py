@@ -1,19 +1,35 @@
 from config import EnvConfig
-from keras.applications.imagenet_utils import preprocess_input
-from keras_vggface.vggface import VGGFace
+#from keras.applications.imagenet_utils import preprocess_input #2024.11.15 vggface offline
+#from keras_vggface.vggface import VGGFace #2024.11.15 vggface offline
 import numpy as np
 import cv2
 import pickle
 import zlib
 from utils import *
 
+from FaceNet import FaceNetMatch
+
 class FaceMatch:
     def __init__(self):
         
         self.env = EnvConfig()
-        self.vgg_face_model = VGGFace(model='senet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
-        
-        
+        #self.vgg_face_model = VGGFace(model='senet50', include_top=False, input_shape=(224, 224, 3), pooling='avg') #2024.11.15 vggface offline
+        self.facematch_tool =  FaceNetMatch()
+    
+    
+    def get_img_facenet_feature(self,face_img):
+        face_feature =  self.facematch_tool.get_image_feature(face_img)
+        ########
+        #print ("*************",face_feature)
+        #######
+        return face_feature
+
+    def facenet_distance_compare(self,feature1,feature2):
+        dist = np.linalg.norm(feature1 - feature2, axis=0)
+        return dist
+    
+    ##2024.11.15 vggface offline 
+    '''
     def get_img_vggface_feature(self,face_img):
         # 调整人脸区域大小为(224, 224)
         face_img_resized = cv2.resize(face_img, (224, 224))
@@ -25,11 +41,13 @@ class FaceMatch:
         features = self.vgg_face_model.predict(face_array,verbose=0)
         feature = np.squeeze(features)
         return feature
+    '''
     
-    
+    '''
     def get_file_feature(self,file_path):
         img = cv2.imread(file_path)
         return self.get_img_vggface_feature(img)
+    '''
     
     def compare_feature_EulerDistance(self,feature1,feature2):
         return euler_distance(feature1,feature2)
@@ -72,7 +90,9 @@ class FaceMatch:
         best_score = None
         best_name = self.env.defeat_match_name
         #target_feature = self.get_img_feature(target_face)
-        target_feature = self.get_img_vggface_feature(target_face)
+        #target_feature = self.get_img_vggface_feature(target_face) #2024.11.15 vggface offline
+        target_feature = self.get_img_facenet_feature(target_face)
+        
         
         
         for face_id in faces_feature_dict.keys():
@@ -81,7 +101,10 @@ class FaceMatch:
             
             #for face_feature in face_features:
             #this_score = self.evl_features(target_feature,face_feature)
+            #this_score = self.facenet_distance_compare(target_feature,face_feature)
             this_score = self.compare_feature_EulerDistance(target_feature,face_feature)
+            #print ("@@@@@@@@@@@@@",this_score)
+            
             if begin_flag:
                 if self.check_features_score(this_score):
                     best_score = this_score

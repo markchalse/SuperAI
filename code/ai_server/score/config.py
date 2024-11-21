@@ -33,3 +33,6 @@ class EnvConfig:
         self.MAX_LEN = 3
         
         
+        
+        self.square_goal_step_id = "1840309626334511106"
+        self.triangular_goal_step_id = "1840309626334511107"
