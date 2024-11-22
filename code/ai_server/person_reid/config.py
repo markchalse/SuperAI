@@ -22,7 +22,7 @@ class EnvConfig:
         
         
         self.face_recognition_redis_key = '101_50_0'
-        self.camera_redis_key = '101_1_0'
+        self.camera_redis_key = '101_3_0'#'101_1_0'
         self.person_reid_key = '101_51_0'
         
         
